@@ -209,10 +209,13 @@ class Generic
   end
 
   #enable and disable management protocol ,such as snmpv1v2, on the management protocol page
-  def mgtprot_ctrl(state)
+  #obj_name means protocol checkbox name on management protocol page, string type.
+  #state menas set or clear, string type.
+  def mgtprot_ctrl(obj_name, state)
     mgtprot.click
     edit.click
-    snmp_v1v2.send state
+    send(obj_name).send state #Change the checkbox status.
+    #Use send method to convert string to existing method.
     save.click_no_wait
     jsClick("OK")
     snmp.click #Retrun back to original page.
