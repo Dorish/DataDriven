@@ -72,16 +72,14 @@ begin
     if g.checkbox(g.upsmib) == 'set'
       g.upstraps.send ws.Range("m#{row}")['Value']
     end
-	
+
     g.lgpmib.send ws.Range("n#{row}")['Value']
     if g.checkbox(g.lgpmib) =='set'
       g.lgptraps.send ws.Range("o#{row}")['Value']
       g.sysnotify.send ws.Range("p#{row}")['Value']
     end
-	   
-    HeartBeat = ((ws.Range("q#{row}")['Value']).to_i).to_s
-    puts "#{HeartBeat}"
-    g.snmp_hb.select_value(HeartBeat)
+
+    g.snmp_hb.select_value((ws.Range("q#{row}")['Value'].to_i).to_s)
 	
     # if a popup is expected, handle with Reset-OK or Reset-Cancel
     # if no popup is expected, save
@@ -93,11 +91,11 @@ begin
       g.jsClick('OK')
     end
 
-    #read email and sms Checkbox value
+    # read Authentication and LGP checkbox value
     sleep 1 #without this sleep, step 5 will fail
     g.edit.click
 	
-    puts " email = " + ws.Range("bc#{row}")['Value'] = g.checkbox(g.snmp_auth)
+    ws.Range("bc#{row}")['Value'] = g.checkbox(g.snmp_auth)
 
     ws.Range("bd#{row}")['Value'] = g.checkbox(g.upsmib)
     if g.checkbox(g.upsmib) == 'set'
@@ -109,7 +107,7 @@ begin
       ws.Range("bg#{row}")['Value'] = g.checkbox(g.lgptraps)
       ws.Range("bh#{row}")['Value'] = g.checkbox(g.sysnotify)
     end
-	
+    
     ws.Range("bi#{row}")['Value'] = g.snmp_hb.value
     
     g.save.click_no_wait
