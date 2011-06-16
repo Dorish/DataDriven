@@ -96,18 +96,11 @@ begin
     g.edit.click
 	
     ws.Range("bc#{row}")['Value'] = g.checkbox(g.snmp_auth)
-
     ws.Range("bd#{row}")['Value'] = g.checkbox(g.upsmib)
-    if g.checkbox(g.upsmib) == 'set'
-      ws.Range("be#{row}")['Value'] = g.checkbox(g.upstraps)
-    end
-
+    ws.Range("be#{row}")['Value'] = g.checkbox(g.upstraps)
     ws.Range("bf#{row}")['Value'] = g.checkbox(g.lgpmib)
-    if g.checkbox(g.lgpmib) == 'set'
-      ws.Range("bg#{row}")['Value'] = g.checkbox(g.lgptraps)
-      ws.Range("bh#{row}")['Value'] = g.checkbox(g.sysnotify)
-    end
-    
+    ws.Range("bg#{row}")['Value'] = g.checkbox(g.lgptraps)
+    ws.Range("bh#{row}")['Value'] = g.checkbox(g.sysnotify)
     ws.Range("bi#{row}")['Value'] = g.snmp_hb.value
     
     g.save.click_no_wait

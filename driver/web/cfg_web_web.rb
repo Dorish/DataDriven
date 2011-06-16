@@ -110,24 +110,12 @@ begin
     sleep 1
     g.edit.click
     
-    web_mode = g.websrvr.value
-    puts "Web Server = #{web_mode}"
-    ws.Range("bc#{row}")['Value'] = web_mode
-    if web_mode == "2"
-      ws.Range("bd#{row}")['Value'] = g.httpport.value
-    elsif web_mode == "3"
-      ws.Range("be#{row}")['Value'] = g.httpsport.value
-    else
-      puts"Web server is Disabled"
-    end
-    
-    unless web_mode == "1"
-      ws.Range("bf#{row}")['Value'] = g.checkbox(g.pswdprtct)
-      ws.Range("bg#{row}")['Value'] = g.checkbox(g.cfgctrl)
-      ws.Range("bh#{row}")['Value'] = g.refresh.value
-    else
-      puts "Web Server is Disabled"
-    end
+    ws.Range("bc#{row}")['Value'] = g.websrvr.value
+    ws.Range("bd#{row}")['Value'] = g.httpport.value
+    ws.Range("be#{row}")['Value'] = g.httpsport.value
+    ws.Range("bf#{row}")['Value'] = g.checkbox(g.pswdprtct)
+    ws.Range("bg#{row}")['Value'] = g.checkbox(g.cfgctrl)
+    ws.Range("bh#{row}")['Value'] = g.refresh.value
     
     g.save.click_no_wait
     g.jsClick('OK')

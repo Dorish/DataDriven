@@ -138,12 +138,9 @@ begin
         ws.Range("bg#{row}")['Value'] = g.checkbox(g.email_loc)
         ws.Range("bh#{row}")['Value'] = g.checkbox(g.email_desc)
         ws.Range("bi#{row}")['Value'] = g.checkbox(g.email_weblnk)
-
         ws.Range("bj#{row}")['Value'] = g.checkbox(g.email_consol)
-        if g.checkbox(g.email_consol) == 'set'
-          ws.Range("bl#{row}")['Value'] = g.email_consoltime.value
-          ws.Range("bm#{row}")['Value'] = g.email_consolevt.value 
-        end
+        ws.Range("bl#{row}")['Value'] = g.email_consoltime.value
+        ws.Range("bm#{row}")['Value'] = g.email_consolevt.value 
     
       when 'sms'
         ws.Range("bc#{row}")['Value'] = g.checkbox(g.sms_addr)
@@ -153,12 +150,9 @@ begin
         ws.Range("bg#{row}")['Value'] = g.checkbox(g.sms_loc)
         ws.Range("bh#{row}")['Value'] = g.checkbox(g.sms_desc)
         ws.Range("bi#{row}")['Value'] = g.checkbox(g.sms_weblnk)
-
         ws.Range("bj#{row}")['Value'] = g.checkbox(g.sms_consol)
-        if g.checkbox(g.sms_consol) == 'set'
-          ws.Range("bl#{row}")['Value'] = g.sms_consoltime.value
-          ws.Range("bm#{row}")['Value'] = g.sms_consolevt.value 
-        end
+        ws.Range("bl#{row}")['Value'] = g.sms_consoltime.value
+        ws.Range("bm#{row}")['Value'] = g.sms_consolevt.value 
     
     end
     
