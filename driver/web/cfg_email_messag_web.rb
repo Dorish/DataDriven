@@ -61,7 +61,7 @@ begin
   g.logn_chk(g.email,excel[1])
 
   #Enable email on msging page first.
-  g.msg_ctrl("email", "set")
+  g.wrt_checkbox(g.email_msg, 'set', g.msging, g.email)
   row = 1
   fail = 0
   while(row <= rows)
@@ -126,7 +126,7 @@ rescue Exception => e
 
 ensure #this section is executed even if script goes in error
   #Disable email on msging page.
-  g.msg_ctrl("email", "clear")
+  g.wrt_checkbox(g.email_msg, 'clear', g.msging, g.email)
   if(error_present == nil)
     # If roe > 0, script is called from controller
     # If roe = 0, script is being ran independently

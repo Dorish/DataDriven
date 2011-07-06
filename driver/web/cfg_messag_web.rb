@@ -61,9 +61,8 @@ begin
     g.edit.click
 
     # write email and sms checkbox value
-    g.email_msg.send ws.Range("k#{row}")['Value']
-    g.sms_msg.send ws.Range("l#{row}")['Value']
-
+    g.wrt_checkbox(g.email_msg, ws.Range("k#{row}")['Value'])
+    g.wrt_checkbox(g.sms_msg, ws.Range("l#{row}")['Value'])
     # if a popup is expected, handle with Reset-OK or Reset-Cancel
     # if no popup is expected, save
     pop = ws.Range("af#{row}")['Value']

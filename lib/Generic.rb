@@ -221,6 +221,25 @@ class Generic
     snmp.click #Retrun back to original page.
   end
 
+#enable or disable checkbox, the checkbox can be local or on another page.
+#obj_name means  checkbox name.
+#state means 'set' or 'clear', string type.
+#loc means the location of the checkbox, can be a link name or nil if checkbox is local.
+#ret means original page, can be a link name or nil if checkbox is local.
+def wrt_checkbox(obj_name, state,loc = nil, ret = nil)
+  if loc #only when checkbox is on another page, the method need to click edit and then save, otherwise, only set/clear checkbox.
+    loc.click #When checkbox locates in another page, goto that page.
+    edit.click
+  end
+  obj_name.send state #Change the checkbox status.Use send method to convert string to existing method.
+  if ret
+    save.click_no_wait
+    jsClick("OK")
+    sleep 1
+    ret.click #Retrun back to original page.
+  end
+end
+
 end
 
 class Array

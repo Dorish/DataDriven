@@ -77,8 +77,8 @@ begin
     end
     
     unless web_server == "1"
-      g.pswdprtct.send ws.Range("n#{row}")['Value']
-      g.cfgctrl.send ws.Range("o#{row}")['Value']
+      g.wrt_checkbox(g.pswdprtct, ws.Range("n#{row}")['Value'])
+      g.wrt_checkbox(g.cfgctrl, ws.Range("o#{row}")['Value'])
       g.refresh.set((ws.Range("p#{row}")['Value']).to_s)
     else
       puts "The Web Server is Disabled"

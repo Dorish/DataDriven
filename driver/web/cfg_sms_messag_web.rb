@@ -61,7 +61,7 @@ begin
   g.logn_chk(g.sms,excel[1])
 
   #Enable sms on msging page first.
-  g.msg_ctrl("sms", "set")
+  g.wrt_checkbox(g.sms_msg, 'set', g.msging, g.sms)
   row = 1
   fail = 0
   while(row <= rows)
@@ -126,7 +126,7 @@ rescue Exception => e
 
 ensure #this section is executed even if script goes in error
   #Disable sms on msging page.
-  g.msg_ctrl("sms", "clear")
+  g.wrt_checkbox(g.sms_msg, 'clear', g.msging, g.sms)
   if(error_present == nil)
     # If roe > 0, script is called from controller
     # If roe = 0, script is being ran independently

@@ -57,7 +57,7 @@ begin
   #Login if not called from controller
   g.logn_chk(g.snmp,excel[1])
 
-  g.mgtprot_ctrl('snmp_v1v2','set')
+  g.wrt_checkbox(g.snmp_v1v2, 'set', g.mgtprot, g.snmp)
   row = 1
   while(row <= rows)
     puts "Test step #{row}"
@@ -66,17 +66,17 @@ begin
     g.edit.click
 
     # write Authentication and LGP checkbox value
-    g.snmp_auth.send ws.Range("k#{row}")['Value']
+    g.wrt_checkbox(g.snmp_auth, ws.Range("k#{row}")['Value'])
 
-    g.upsmib.send ws.Range("l#{row}")['Value']
+    g.wrt_checkbox(g.upsmib, ws.Range("l#{row}")['Value'])
     if g.checkbox(g.upsmib) == 'set'
-      g.upstraps.send ws.Range("m#{row}")['Value']
+      g.wrt_checkbox(g.upstraps, ws.Range("m#{row}")['Value'])
     end
 
-    g.lgpmib.send ws.Range("n#{row}")['Value']
+    g.wrt_checkbox(g.lgpmib, ws.Range("n#{row}")['Value'])
     if g.checkbox(g.lgpmib) =='set'
-      g.lgptraps.send ws.Range("o#{row}")['Value']
-      g.sysnotify.send ws.Range("p#{row}")['Value']
+      g.wrt_checkbox(g.lgptraps, ws.Range("o#{row}")['Value'])
+      g.wrt_checkbox(g.sysnotify, ws.Range("p#{row}")['Value'])
     end
 
     g.snmp_hb.select_value((ws.Range("q#{row}")['Value'].to_i).to_s)
@@ -117,7 +117,7 @@ rescue Exception => e
   error_present=$@.to_s
 
 ensure #this section is executed even if script goes in error
-  g.mgtprot_ctrl('snmp_v1v2','clear')
+  g.wrt_checkbox(g.snmp_v1v2, 'clear', g.mgtprot, g.snmp)
   if(error_present == nil)
     # If roe > 0, script is called from controller
     # If roe = 0, script is being ran independently

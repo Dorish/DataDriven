@@ -65,7 +65,7 @@ begin
     g.edit.click
 
     # write telnet checkbox value
-    g.telnet1.send ws.Range("k#{row}")['Value']
+    g.wrt_checkbox(g.telnet1, ws.Range("k#{row}")['Value'])
     
     # if a popup is expected, handle with Reset-OK or Reset-Cancel
     # if no popup is expected, save

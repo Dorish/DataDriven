@@ -64,8 +64,7 @@ begin
     g.edit.click
   
     # Write SNMP Agent checkbox
-    g.snmp_v1v2.send ws.Range("k#{row}")['Value']
-    
+    g.wrt_checkbox(g.snmp_v1v2, ws.Range("k#{row}")['Value'])
     # if a popup is expected, handle with Reset-OK or Reset-Cancel
     # if no popup is expected, save
     pop = ws.Range("af#{row}")['Value'].to_s 

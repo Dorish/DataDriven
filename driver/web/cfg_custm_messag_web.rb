@@ -72,30 +72,30 @@ begin
     puts "The flag is #{flag}"
     case flag
       when 'email'
-        g.email_addr.send ws.Range("k#{row}")['Value']
-        g.email_evtdesc.send ws.Range("l#{row}")['Value']
-        g.email_name.send ws.Range("m#{row}")['Value']
-        g.email_cont.send ws.Range("n#{row}")['Value']
-        g.email_loc.send ws.Range("o#{row}")['Value']
-        g.email_desc.send ws.Range("p#{row}")['Value']
-        g.email_weblnk.send ws.Range("q#{row}")['Value']
+        g.wrt_checkbox(g.email_addr, ws.Range("k#{row}")['Value'])
+        g.wrt_checkbox(g.email_evtdesc, ws.Range("l#{row}")['Value'])
+        g.wrt_checkbox(g.email_name, ws.Range("m#{row}")['Value'])
+        g.wrt_checkbox(g.email_cont, ws.Range("n#{row}")['Value'])
+        g.wrt_checkbox(g.email_loc, ws.Range("o#{row}")['Value'])
+        g.wrt_checkbox(g.email_desc, ws.Range("p#{row}")['Value'])
+        g.wrt_checkbox(g.email_weblnk, ws.Range("q#{row}")['Value'])
 
-        g.email_consol.send ws.Range("r#{row}")['Value']
+        g.wrt_checkbox(g.email_consol, ws.Range("r#{row}")['Value'])
         if g.checkbox(g.email_consol)=='set'
           g.email_consoltime.set(ws.Range("s#{row}")['Value'].to_s)
           g.email_consolevt.set(ws.Range("t#{row}")['Value'].to_s)
         end
     
       when 'sms'
-        g.sms_addr.send ws.Range("k#{row}")['Value']
-        g.sms_evtdesc.send ws.Range("l#{row}")['Value']
-        g.sms_name.send ws.Range("m#{row}")['Value']
-        g.sms_cont.send ws.Range("n#{row}")['Value']
-        g.sms_loc.send ws.Range("o#{row}")['Value']
-        g.sms_desc.send ws.Range("p#{row}")['Value']
-        g.sms_weblnk.send ws.Range("q#{row}")['Value']
+        g.wrt_checkbox(g.sms_addr, ws.Range("k#{row}")['Value'])
+        g.wrt_checkbox(g.sms_evtdesc, ws.Range("l#{row}")['Value'])
+        g.wrt_checkbox(g.sms_name, ws.Range("m#{row}")['Value'])
+        g.wrt_checkbox(g.sms_cont, ws.Range("n#{row}")['Value'])
+        g.wrt_checkbox(g.sms_loc, ws.Range("o#{row}")['Value'])
+        g.wrt_checkbox(g.sms_desc, ws.Range("p#{row}")['Value'])
+        g.wrt_checkbox(g.sms_weblnk, ws.Range("q#{row}")['Value'])
 
-        g.sms_consol.send ws.Range("r#{row}")['Value']
+        g.wrt_checkbox(g.sms_consol, ws.Range("r#{row}")['Value'])
         if g.checkbox(g.sms_consol) == 'set'
           g.sms_consoltime.set(ws.Range("s#{row}")['Value'].to_s)
           g.sms_consolevt.set(ws.Range("t#{row}")['Value'].to_s)
