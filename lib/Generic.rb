@@ -195,31 +195,6 @@ class Generic
     end
     return nil
   end
-  
-  #enable and disable email and sms on the messaging page
-  def msg_ctrl(type, state)
-    msging.click
-    edit.click
-    email_msg.send state if type == "email"
-    sms_msg.send state if type == "sms"
-    save.click_no_wait
-    jsClick("OK")
-    send(type).click #Retrun back to original page.
-    # Use send method to convert string, such as "email"/"sms", to existing method email/sms.
-  end
-
-  #enable and disable management protocol ,such as snmpv1v2, on the management protocol page
-  #obj_name means protocol checkbox name on management protocol page, string type.
-  #state menas set or clear, string type.
-  def mgtprot_ctrl(obj_name, state)
-    mgtprot.click
-    edit.click
-    send(obj_name).send state #Change the checkbox status.
-    #Use send method to convert string to existing method.
-    save.click_no_wait
-    jsClick("OK")
-    snmp.click #Retrun back to original page.
-  end
 
 #enable or disable checkbox, the checkbox can be local or on another page.
 #obj_name means  checkbox name.
