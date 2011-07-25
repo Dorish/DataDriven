@@ -144,14 +144,14 @@ class Generic
   # - ret = page to return to if checkbox is on a different page.
   # - 'send' method is used to convert a string to a literal method
   def wrt_checkbox(chkbox, state,loc = nil, ret = nil)
-    if loc #goto different page
+    if loc 
       loc.click 
       edit.click
-      chkbox.send state  #'send' convert string 'set' or 'clear' to method
+      chkbox.send state  
       save.click_no_wait
       jsClick("OK")
       sleep 1
-      ret.click #Return to originating page.
+      ret.click 
     else
       chkbox.send state
     end
