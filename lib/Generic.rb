@@ -136,7 +136,29 @@ class Generic
     end
   end
 
-  #-read radio status and return radio number which selected in the table
+  
+  # - set or clear checkbox on current page or different page.
+  # - chkbox = checkbox name.
+  # - state = 'set' or 'clear'.
+  # - loc = location of checkbox if it's on a different page.
+  # - ret = page to return to if checkbox is on a different page.
+  # - 'send' method is used to convert a string to a literal method
+  def wrt_checkbox(chkbox, state,loc = nil, ret = nil)
+    if loc #goto different page
+      loc.click 
+      edit.click
+      chkbox.send state  #'send' convert string 'set' or 'clear' to method
+      save.click_no_wait
+      jsClick("OK")
+      sleep 1
+      ret.click #Return to originating page.
+    else
+      chkbox.send state
+    end
+  end
+
+
+  # - read radio status and return radio number which selected in the table
   def radio_check(table)
     table.radios.each{|x| if x.checked? then  return  x.value end }
   end
@@ -195,25 +217,6 @@ class Generic
     end
     return nil
   end
-
-#enable or disable checkbox, the checkbox can be local or on another page.
-#obj_name means  checkbox name.
-#state means 'set' or 'clear', string type.
-#loc means the location of the checkbox, can be a link name or nil if checkbox is local.
-#ret means original page, can be a link name or nil if checkbox is local.
-def wrt_checkbox(obj_name, state,loc = nil, ret = nil)
-  if loc #only when checkbox is on another page, the method need to click edit and then save, otherwise, only set/clear checkbox.
-    loc.click #When checkbox locates in another page, goto that page.
-    edit.click
-  end
-  obj_name.send state #Change the checkbox status.Use send method to convert string to existing method.
-  if ret
-    save.click_no_wait
-    jsClick("OK")
-    sleep 1
-    ret.click #Retrun back to original page.
-  end
-end
 
 end
 
