@@ -361,33 +361,33 @@ module Nav
  
 
   # -SNMP V3 settings enable checkbox
-  def v3_enable(number); det.checkbox(:name, 'enableUser', "?#{number}"); end
+  def v3_enable(number); det.checkbox(:name, 'eUsr', "?#{number}"); end
   # -SNMP V3 settings user name text field
-  def v3_user(number); det.form(:name, 'configSnmpV3Simple').text_field(:name, "informUser?#{number}"); end
+  def v3_user(number); det.form(:name, 'configSnmpV3Simple').text_field(:name, "iUsr?#{number}"); end
   # -SNMP V3 settings authentication radio
-  def v3_auth(number,authentication); det.radio(:name, "informAuthType?#{number}", "#{authentication}"); end
+  def v3_auth(number,authentication); det.radio(:name, "iATyp?#{number}", "#{authentication}"); end
   # -SNMP V3 settings authentication secret tesxt field
-  def v3_auth_secret(number); det.form(:name, 'configSnmpV3Simple').text_field(:name, "informAuthPass?#{number}"); end
+  def v3_auth_secret(number); det.form(:name, 'configSnmpV3Simple').text_field(:name, "iAPass?#{number}"); end
   # -SNMP V3 settings privacy radio
-  def v3_privacy(number,privacy); det.radio(:name, "informPrivType?#{number}", "#{privacy}"); end
+  def v3_privacy(number,privacy); det.radio(:name, "iPTyp?#{number}", "#{privacy}"); end
   # -SNMP V3 settings privacy secret tesxt field
-  def v3_privacy_secret(number); det.form(:name, 'configSnmpV3Simple').text_field(:name, "informPrivPass?#{number}"); end
+  def v3_privacy_secret(number); det.form(:name, 'configSnmpV3Simple').text_field(:name, "iPPass?#{number}"); end
 
   # -SNMP V3 settings access read check box
-  def v3_acc_read(number); det.checkbox(:name, 'readAccess', "?#{number}") ; end
+  def v3_acc_read(number); det.checkbox(:name, 'rAcc', "?#{number}") ; end
   # -SNMP V3 settings access write read check box
-  def v3_acc_write(number); det.checkbox(:name, 'writeAccess',"?#{number}"); end
+  def v3_acc_write(number); det.checkbox(:name, 'wAcc',"?#{number}"); end
   # -SNMP V3 settings sources text field
-  def v3_sources(number); det.form(:name, 'configSnmpV3Simple').text_field(:name, "informSource?#{number}"); end
+  def v3_sources(number); det.form(:name, 'configSnmpV3Simple').text_field(:name, "iSrc?#{number}"); end
   #zmg modify 2010-7-26*****************************
   # -SNMP V3 setting notify check box
-  def v3_notify(number); det.checkbox(:name, 'enableNotify',"?#{number}"); end
+  def v3_notify(number); det.checkbox(:name, 'eNot',"?#{number}"); end
   # -SNMP V3 settings inform trap radio
   def v3_inform_trap(number,notifytype); det.radio(:name, "notifyType?#{number}", "#{notifytype}"); end
 
   #******************************
   # -SNMP V3 settings destinations text field
-  def v3_destinations(number); det.form(:name, 'configSnmpV3Simple').text_field(:name, "informDestination?#{number}"); end
+  def v3_destinations(number); det.form(:name, 'configSnmpV3Simple').text_field(:name, "iDst?#{number}"); end
   # -SNMP V3 settings port
   def v3_port(number); det.form(:name, 'configSnmpV3Simple').text_field(:name, "tP?#{number}"); end
   # -SNMP V3 settings Retries
@@ -397,7 +397,7 @@ module Nav
 
   #zmg modify 2010-7-26*****************************
   # -SNMP V3 settings heartbeat checkbox
-  def v3_heartbeat(number); det.checkbox(:name, 'enableHeartbeat',"?#{number}"); end
+  def v3_heartbeat(number); det.checkbox(:name, 'eHbeat',"?#{number}"); end
   #***********************************
 
 
