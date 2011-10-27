@@ -124,8 +124,8 @@ begin
   #Read  Management Protocol
   puts 'Read Management Protocol '
   g.mgtprot.click
-  ws.Range("B#{row}")['Value'] = g.snmp_v1v2.value
-  ws.Range("C#{row}")['Value'] = g.snmp_v3.value
+  ws.Range("B#{row}")['Value'] = g.checkbox(g.snmp_v1v2)
+  ws.Range("C#{row}")['Value'] = g.checkbox(g.snmp_v3)
   row += 2
   
   #Read  SNMP
