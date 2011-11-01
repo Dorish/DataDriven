@@ -43,10 +43,14 @@ module  Teardown
   #
   # - teardown driver - this function will update driver spreadsheet
   # - update controller spreadsheet if called from controller
-  def tear_down_d(xl,s,f,roe)
+  def tear_down_d(xl,s,f,roe,error_present)
     ss,wb,ws = xl # spreadsheet
     elapsed = run_time(s,f,ws)
-    status = ws.Range("b9")['Value'] # driver Pass / Fail
+    if (error_present == nil)
+      status = ws.Range("b9")['Value'] # driver Pass / Fail
+    else
+      status = "Abort"
+    end
     puts "Status: #{status}\n\n"
     wb.save
     wb.close
