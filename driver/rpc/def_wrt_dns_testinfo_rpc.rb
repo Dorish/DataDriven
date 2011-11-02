@@ -80,18 +80,11 @@ rescue Exception => e
   error_present=$@.to_s
 
 ensure #this section is executed even if script goes in error
-  if(error_present == nil)
     # If roe > 0, script is called from controller
     # If roe = 0, script is being ran independently
     #Close and save the spreadsheet and thes web browser.
-    g.tear_down_d(excel[0],s,f,roe)
+    g.tear_down_d(excel[0],s,f,roe,error_present)
     if roe == 0
-    $ie.close
+      $ie.close
     end
-  else 
-    puts" There were errors in the script"
-    status = "script in error"
-    wb.save
-    wb.close
-  end
 end

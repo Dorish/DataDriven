@@ -47,19 +47,16 @@ begin
 rescue Exception => e
   puts" \n\n **********\n\n #{$@ } \n\n #{e} \n\n ***"
   error_present=$@.to_s
-ensure
+ensure #this section is executed even if script goes in error
   f = Time.now
-  if(error_present == nil)
-    $ie.goto(excel[1][2]) # go back to config page so next script can run
-    g.config.click
-    g.tear_down_d(excel[0],s,f,roe)
-    if roe == 0
-      $ie.close
-    end
-  else
-    puts" Script execution error"
-    wb.Save
-    wb.close
+  $ie.goto(excel[1][2]) # go back to config page so next script can run
+  g.config.click
+  # If roe > 0, script is called from controller
+  # If roe = 0, script is being ran independently
+  #Close and save the spreadsheet and thes web browser.
+  g.tear_down_d(excel[0],s,f,roe,error_present)
+  if roe == 0
+    $ie.close
   end
 end
 
