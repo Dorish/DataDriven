@@ -69,8 +69,7 @@ begin
     #ws.Range("bd#{row}")['Value'] = g.tftp_port.value
     ws.Range("be#{row}")['Value'] = g.tftp_file.value
     
-    g.save.click_no_wait
-    g.jsClick('OK')
+    g.save.click
     wb.Save
   end
 

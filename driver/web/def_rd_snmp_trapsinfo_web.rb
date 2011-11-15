@@ -70,7 +70,8 @@ begin
 	puts "Trap Port ="+ws.Range("bd#{row}")['Value']=g.trap_port(1).value
 	puts "Trap Community String ="+ws.Range("be#{row}")['Value']=g.trap_com(1).value
 	puts "Trap HeartBeat ="+ws.Range("bf#{row}")['Value']=g.checkbox(g.trap_hb(1))
-	g.save.click
+    g.save.click_no_wait
+    g.jsClick('OK')
    
    wb.Save
   end

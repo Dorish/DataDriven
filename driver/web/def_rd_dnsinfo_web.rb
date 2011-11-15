@@ -78,8 +78,7 @@ begin
     ws.Range("bf#{row}")['Value'] = g.dns_int.value
     ws.Range("bg#{row}")['Value'] = g.dns_suf.value
 
-	g.save.click_no_wait
-    #g.jsClick('OK')
+	g.save.click
     wb.Save
   end
 

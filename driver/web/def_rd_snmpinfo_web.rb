@@ -82,7 +82,7 @@ begin
 	 ws.Range("bg#{row}")['Value'] = g.snmp_hb.value
 	 
     g.save.click_no_wait
-  
+    g.jsClick('OK')
     wb.Save
   end
 

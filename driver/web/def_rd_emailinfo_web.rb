@@ -98,7 +98,7 @@ begin
     #Read Port value
     ws.Range("bh#{row}")['Value'] = g.email_port.value
 	
-    g.save.click_no_wait
+    g.save.click
     wb.Save
   end
 
