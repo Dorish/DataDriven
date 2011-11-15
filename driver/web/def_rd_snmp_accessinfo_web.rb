@@ -77,7 +77,8 @@ begin
     puts "#{g.access_com(1).value}"
     ws.Range("be#{row}")['Value'] = g.access_com(1).value
     
-    g.save.click
+    g.save.click_no_wait
+    g.jsClick('OK')
     wb.Save
   end
 
