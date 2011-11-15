@@ -68,6 +68,8 @@ begin
     if ws.Range("k#{row}")['Value'] == 'set' then g.email_msg.set else g.email_msg.clear end
     if ws.Range("l#{row}")['Value'] == 'set' then g.sms_msg.set else g.sms_msg.clear end
 
+    g.save.click_no_wait
+    g.jsClick('OK')
    end
 
   f = Time.now  #finish time

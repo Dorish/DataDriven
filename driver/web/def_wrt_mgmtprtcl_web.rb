@@ -66,6 +66,9 @@ begin
 
     # write SNMP Agent checkbox value
     if ws.Range("k#{row}")['Value'] == 'set' then g.snmp_en.set else g.snmp_en.clear end
+    
+    g.save.click_no_wait
+    g.jsClick('OK')
   end
 
   f = Time.now  #finish time

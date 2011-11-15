@@ -79,7 +79,9 @@ begin
     HeartBeat = ((ws.Range("q#{row}")['Value']).to_i).to_s
     puts "#{HeartBeat}"
     g.snmp_hb.select_value(HeartBeat)
-	
+
+    g.save.click_no_wait
+    g.jsClick('OK')
     end
 
   f = Time.now  #finish time

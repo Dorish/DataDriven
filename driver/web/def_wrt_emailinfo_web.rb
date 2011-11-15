@@ -78,7 +78,8 @@ begin
     end
     g.email_srvr.set(ws.Range("o#{row}")['Value'].to_s)
     g.email_port.set(ws.Range("p#{row}")['Value'].to_s)  
-      
+
+    g.save.click
   end
 
   f = Time.now  #finish time

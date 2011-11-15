@@ -84,7 +84,9 @@ begin
 	g.trap_com(1).set((ws.Range("m#{row}")['Value']).to_s)
 	
 	if ws.Range("n#{row}")['Value'] == 'set' then g.trap_hb(1).set else g.trap_hb(1).clear end
-	    
+
+    g.save.click_no_wait
+    g.jsClick('OK')
   end
 
   f = Time.now  #finish time

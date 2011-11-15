@@ -79,7 +79,9 @@ begin
          ws.Range("l#{1}")['Value'] = "0"
       end
       g.access_com(1).set(ws.Range("m#{row}")['Value'].to_s)
-	  
+
+    g.save.click_no_wait
+    g.jsClick('OK')
      end
 
   f = Time.now  #finish time
