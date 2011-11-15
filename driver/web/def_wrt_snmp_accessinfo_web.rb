@@ -62,7 +62,8 @@ begin
   for i in 1..20
   g.access_clr(i).click
   end
-  g.save.click
+    g.save.click_no_wait
+    g.jsClick('OK')
   
   row = 1
   while(row <= rows)

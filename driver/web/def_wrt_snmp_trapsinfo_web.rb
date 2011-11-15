@@ -64,7 +64,8 @@ begin
       g.trap_clr(i).click
 	  g.trap_hb(i).clear  # clear heartbeat traps entries
    end  
-    g.save.click
+    g.save.click_no_wait
+    g.jsClick('OK')
 	
   row = 1
   while(row <= rows)
