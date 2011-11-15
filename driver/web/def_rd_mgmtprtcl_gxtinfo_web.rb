@@ -65,7 +65,7 @@ begin
     #read snmp agent value
     sleep 1 #without this sleep, step 5 will fail
     g.edit.click
-    puts " Snmp Agent = " + ws.Range("bc#{row}")['Value'] = g.checkbox(g.snmp_en)
+    puts " Snmp Agent = " + ws.Range("bc#{row}")['Value'] = g.checkbox(g.snmp_v1v2)
     g.save.click_no_wait
     g.jsClick('OK')
 

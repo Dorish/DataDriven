@@ -55,7 +55,7 @@ begin
   #Click the Messaging link in the on the left side of window
   $ie.maximize()
   #Login if not called from controller
-  g.logn_chk(g.traps,excel[1])
+  g.logn_chk(g.v1traps,excel[1])
   
    #Clear all rows of any contents in traps table
    g.edit.click
