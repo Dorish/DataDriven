@@ -56,7 +56,8 @@ begin
   #Click the Messaging link in the on the left side of window
   #Login if not called from controller
   g.logn_chk(g.snmp,excel[1])
-    
+
+  g.wrt_checkbox(g.snmp_v1v2, 'set', g.mgtprot, g.snmp)
   row = 1
   while(row <= rows)
     puts "Test step #{row}"
@@ -82,7 +83,7 @@ begin
 	 ws.Range("bg#{row}")['Value'] = g.snmp_hb.value
 	 
     g.save.click_no_wait
-  
+    g.jsClick('OK')
     wb.Save
   end
 
@@ -94,6 +95,7 @@ rescue Exception => e
   error_present=$@.to_s
 
 ensure #this section is executed even if script goes in error
+  g.wrt_checkbox(g.snmp_v1v2, 'clear', g.mgtprot, g.snmp)
     # If roe > 0, script is called from controller
     # If roe = 0, script is being ran independently
     #Close and save the spreadsheet and thes web browser.

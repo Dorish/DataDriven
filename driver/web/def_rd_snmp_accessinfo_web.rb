@@ -55,7 +55,7 @@ begin
   $ie.maximize  
   #Click the SNMP Access link on the left side of widow
   #Login if not called from controller
-  g.logn_chk(g.access,excel[1])
+  g.logn_chk(g.v1access,excel[1])
   
   row = 1
   while(row <= rows)
@@ -77,7 +77,8 @@ begin
     puts "#{g.access_com(1).value}"
     ws.Range("be#{row}")['Value'] = g.access_com(1).value
     
-    g.save.click
+    g.save.click_no_wait
+    g.jsClick('OK')
     wb.Save
   end
 

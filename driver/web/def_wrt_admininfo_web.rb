@@ -67,7 +67,9 @@ begin
     g.admin_name.set((ws.Range("k#{row}")['Value']).to_s)
     g.admin_pswd.set((ws.Range("l#{row}")['Value']).to_s)
     g.admin_pswd2.set((ws.Range("m#{row}")['Value']).to_s)
-	
+
+    g.save.click_no_wait
+    g.jsClick('OK')
 end
 
   f = Time.now  #finish time

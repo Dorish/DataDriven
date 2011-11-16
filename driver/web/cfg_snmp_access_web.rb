@@ -112,7 +112,7 @@ begin
   g.jsClick('OK')
 
 
-  row = 121
+  row = 1
   while(row <= rows)
     puts "\n\nTest step #{row}"
     row +=1 # add 1 to row as execution starts at drvr_ss row 2

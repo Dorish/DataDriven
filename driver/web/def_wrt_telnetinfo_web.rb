@@ -66,7 +66,9 @@ begin
 
     # write telnet checkbox value
     if ws.Range("k#{row}")['Value'] == 'set' then g.telnet1.set else g.telnet1.clear end
-   
+
+    g.save.click_no_wait
+    g.jsClick('OK')
    end
 
   f = Time.now  #finish time

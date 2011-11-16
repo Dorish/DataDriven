@@ -55,7 +55,7 @@ begin
   #Click the Messaging link in the on the left side of window
   $ie.maximize()
   #Login if not called from controller
-  g.logn_chk(g.traps,excel[1])
+  g.logn_chk(g.v1traps,excel[1])
   
    #Clear all rows of any contents in traps table
    g.edit.click
@@ -64,7 +64,8 @@ begin
       g.trap_clr(i).click
 	  g.trap_hb(i).clear  # clear heartbeat traps entries
    end  
-    g.save.click
+    g.save.click_no_wait
+    g.jsClick('OK')
 	
   row = 1
   while(row <= rows)
@@ -84,7 +85,9 @@ begin
 	g.trap_com(1).set((ws.Range("m#{row}")['Value']).to_s)
 	
 	if ws.Range("n#{row}")['Value'] == 'set' then g.trap_hb(1).set else g.trap_hb(1).clear end
-	    
+
+    g.save.click_no_wait
+    g.jsClick('OK')
   end
 
   f = Time.now  #finish time

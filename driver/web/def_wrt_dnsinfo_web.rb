@@ -79,7 +79,8 @@ begin
 	
 	#Write DNS Name suffix 	
     g.dns_suf.set(ws.Range("o#{row}")['Value'].to_s)
-      
+
+    g.save.click
   end
 
   f = Time.now  #finish time

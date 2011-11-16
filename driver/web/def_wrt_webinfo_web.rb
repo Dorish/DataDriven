@@ -83,6 +83,9 @@ begin
     else
       puts "The Web Server is Disabled"
     end
+
+    g.save.click_no_wait
+    g.jsClick('OK')
 end
 
   f = Time.now  #finish time

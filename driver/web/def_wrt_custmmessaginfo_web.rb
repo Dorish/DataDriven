@@ -102,7 +102,8 @@ begin
           g.sms_consol.clear 
         end
     end
-        
+    g.save.click_no_wait
+    g.jsClick('OK')
   end
 
   f = Time.now  #finish time

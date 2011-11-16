@@ -55,7 +55,7 @@ begin
   #Click the Messaging link in the on the left side of window
   $ie.maximize()
   #Login if not called from controller
-  g.logn_chk(g.traps,excel[1])
+  g.logn_chk(g.v1traps,excel[1])
   
   row = 1
   while(row <= rows)
@@ -70,7 +70,8 @@ begin
 	puts "Trap Port ="+ws.Range("bd#{row}")['Value']=g.trap_port(1).value
 	puts "Trap Community String ="+ws.Range("be#{row}")['Value']=g.trap_com(1).value
 	puts "Trap HeartBeat ="+ws.Range("bf#{row}")['Value']=g.checkbox(g.trap_hb(1))
-	g.save.click
+    g.save.click_no_wait
+    g.jsClick('OK')
    
    wb.Save
   end

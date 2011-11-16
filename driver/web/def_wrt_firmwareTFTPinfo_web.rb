@@ -67,6 +67,8 @@ begin
     g.tftp_srvr.set(ws.Range("k#{row}")['Value'])
     #g.tftp_port.set(((ws.Range("l#{row}")['Value']).to_i).to_s)
     g.tftp_file.set(ws.Range("m#{row}")['Value'])
+
+    g.save.click
 end
 
   f = Time.now  #finish time

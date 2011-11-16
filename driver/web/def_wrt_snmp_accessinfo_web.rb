@@ -55,14 +55,15 @@ begin
   $ie.maximize  
   #Click the SNMP Access link on the left side of widow
   #Login if not called from controller
-  g.logn_chk(g.access,excel[1])
+  g.logn_chk(g.v1access,excel[1])
   
   #Clear All SNMP Access textboxes
   g.edit.click
   for i in 1..20
   g.access_clr(i).click
   end
-  g.save.click
+    g.save.click_no_wait
+    g.jsClick('OK')
   
   row = 1
   while(row <= rows)
@@ -79,7 +80,9 @@ begin
          ws.Range("l#{1}")['Value'] = "0"
       end
       g.access_com(1).set(ws.Range("m#{row}")['Value'].to_s)
-	  
+
+    g.save.click_no_wait
+    g.jsClick('OK')
      end
 
   f = Time.now  #finish time

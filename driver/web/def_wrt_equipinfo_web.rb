@@ -62,7 +62,8 @@ begin
     g.cont.set(ws.Range("l#{row}")['Value'])
     g.loc.set(ws.Range("m#{row}")['Value'])
     g.desc.set(ws.Range("n#{row}")['Value'])
-        
+
+    g.save.click
 end
 
   f = Time.now  #finish time

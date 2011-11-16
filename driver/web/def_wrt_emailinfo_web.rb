@@ -56,7 +56,9 @@ begin
   #Click the Configure Email link on the left side of window
   #Login if not called from controller
   g.logn_chk(g.email,excel[1])
-  
+
+  #Enable email on msging page first.
+  g.wrt_checkbox(g.email_msg, 'set', g.msging, g.email)
   row = 1
   while(row <= rows)
     puts "Test step #{row}"
@@ -78,7 +80,8 @@ begin
     end
     g.email_srvr.set(ws.Range("o#{row}")['Value'].to_s)
     g.email_port.set(ws.Range("p#{row}")['Value'].to_s)  
-      
+
+    g.save.click
   end
 
   f = Time.now  #finish time
@@ -89,6 +92,8 @@ rescue Exception => e
   error_present=$@.to_s
 
 ensure #this section is executed even if script goes in error
+    #Disable email on msging page.
+    g.wrt_checkbox(g.email_msg, 'clear', g.msging, g.email)
     # If roe > 0, script is called from controller
     # If roe = 0, script is being ran independently
     #Close and save the spreadsheet and thes web browser.

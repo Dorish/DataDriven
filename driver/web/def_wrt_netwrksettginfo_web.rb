@@ -77,6 +77,9 @@ begin
       g.net_subnet.set(ws.Range("n#{row}")['Value'].to_s)
       g.net_gateway.set(ws.Range("o#{row}")['Value'].to_s)
     end
+
+    g.save.click_no_wait
+    g.jsClick('OK')
 end
 
   f = Time.now  #finish time

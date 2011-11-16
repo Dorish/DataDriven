@@ -56,7 +56,9 @@ begin
   #Click the Configure SMS link on the left side of window
   #Login if not called from controller
   g.logn_chk(g.sms,excel[1])
-  
+
+  #Enable sms on msging page first.
+  g.wrt_checkbox(g.sms_msg, 'set', g.msging, g.sms)
   row = 1
   while(row <= rows)
     puts "Test step #{row}"
@@ -90,7 +92,7 @@ begin
 	
     #Read Port value
     ws.Range("bh#{row}")['Value'] = g.sms_port.value
-    g.save.click_no_wait
+    g.save.click
     wb.Save
   end
 
@@ -102,6 +104,8 @@ rescue Exception => e
   error_present=$@.to_s
 
 ensure #this section is executed even if script goes in error
+    #Disable sms on msging page.
+    g.wrt_checkbox(g.sms_msg, 'clear', g.msging, g.sms)
     # If roe > 0, script is called from controller
     # If roe = 0, script is being ran independently
     #Close and save the spreadsheet and thes web browser.
