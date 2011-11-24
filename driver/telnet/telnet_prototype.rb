@@ -3,9 +3,37 @@ require 'win32ole'
 
 begin
 
+  def enter_value()
+  single_str = ' '
+  reg_ex_str = Regexp.new('\.xls')
+  loop{
+  puts "Please enter valid spreadsheet file name:"
+  single_str = gets
+  break unless (reg_ex_str.match(single_str)== nil)
+  puts "The name is not correct!\n"
+  puts "Please enter the correct name of spreadsheet!\n"
+  puts "\n"
+  }
   #Open up the driver spreadsheet and create the timestamped spreadsheet for this test
-  base_ss = File.expand_path(File.dirname(__FILE__)) + '/' + 'cfg_custm_messag_tn.xls'
-  new_ss = (base_ss.chomp(".xls")<<'_'<<Time.now.to_a.reverse[5..9].to_s<<(".xls")).gsub('driver/telnet','result')
+  base_ss = File.expand_path(File.dirname(__FILE__)) + '/' + single_str.chomp("\n")
+  return base_ss
+end
+
+ def argu_value(name)
+   base_ss = File.expand_path(File.dirname(__FILE__)) + '/' + name.to_s.chomp("\n")
+  return base_ss
+ end
+
+ if ARGV.length > 0
+   base_ss = argu_value(ARGV)
+ else
+   base_ss = enter_value()
+ end
+
+
+  new_ss = (base_ss.chomp(".xls")<<'_'<<Time.now.strftime("%m-%d_%H-%M-%S")<<(".xls")).gsub('driver/telnet','result')
+ 
+  
   ss = WIN32OLE::new('excel.Application')
   ss.DisplayAlerts = false #Stops excel from displaying alerts
   ss.Visible = true # For debug
