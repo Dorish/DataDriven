@@ -225,7 +225,7 @@ end
 def singletelnet(telname)
       #base_ss = File.expand_path(File.dirname(__FILE__)) + '/' + telname
       base_ss = telname
-      new_ss = (base_ss.chomp(".xls")<<'_'<<Time.now.to_a.reverse[5..9].to_s<<(".xls")).gsub('driver/telnet','result')
+      new_ss = (base_ss.chomp(".xls")<<'_'<<Time.now.strftime("%m-%d_%H-%M-%S")<<(".xls")).gsub('driver/telnet','result')
       ss = WIN32OLE::new('excel.Application')
       ss.DisplayAlerts = false #Stops excel from displaying alerts
       ss.Visible = true # For debug
