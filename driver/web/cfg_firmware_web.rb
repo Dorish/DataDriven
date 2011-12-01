@@ -37,7 +37,20 @@ s = Time.now
 require 'generic'
 require 'watir/process' 
 
-begin 
+def read_ip_addr
+  host = 'C:/WINDOWS/system32/drivers/etc/hosts'
+  testsite = /^(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\s+(test_site)/
+  
+  File.open(host).each do|line|
+  if line =~ testsite
+    ip = $1  # $1 is the group in the valid_ip regex
+    puts "Existing test_site IP address is: ",ip
+    return ip
+  end
+end
+end
+
+begin
   puts" \n Executing: #{(__FILE__)}\n\n" # print current filename
   g = Generic.new
   roe = ARGV[1].to_i
@@ -46,15 +59,27 @@ begin
   #Collect the support page information and save it in the time stamped spreadsheet.
   excel = g.setup(__FILE__)
   wb,ws = excel[0][1,2]
-  rows = excel[1][1] 
-
+  rows = excel[1][1]
+  #temp is used to remember test_site, it will be used in the ensure section.
+  temp=excel[1][2]
+  
   $ie.speed = :zippy
   #Navigate to the 'Configure' tab
   g.config.click
-  $ie.maximize  
+  $ie.maximize
+    #Login if not called from controller
+  g.logn_chk(g.equipinfo,excel[1])
+
+  # Below scripts complete using IP address to open the page,
+  # and need to login again no matter run indivadually or run from controller.
+  excel[1][2] = read_ip_addr
+  $ie.goto(excel[1][2])
+  site,name,pswd = excel[1][2..4]
+  g.config.click
+  g.login(site,name,pswd)
+  g.equipinfo.click
   #Click the Configure Firmware Update Web on the left side of window
-  #Login if not called from controller
-  g.logn_chk(g.updtweb,excel[1])
+  g.updtweb.click
   
   row = 1
   while(row <= rows)
@@ -63,10 +88,14 @@ begin
     #sleep 5
     
     # Write the Firmware Update Web fields
-    g.web_file.click
-    g.web_file.set(ws.Range("k#{row}")['Value'].to_s)
-    g.web_updt.click
-    
+    filepath=(File.dirname(__FILE__).chomp('driver/web')<<'TestFiles').gsub('/', '\\')
+    if (ws.Range("k#{row}")['Value'].to_s != "")
+      g.web_file.click_no_wait
+      g.web_file.set(filepath+ws.Range("k#{row}")['Value'].to_s)
+    else
+      #Empty input
+      $ie.refresh
+    end
     #Is there a popup expected? 
     pop = ws.Range("af#{row}")['Value'].to_s 
     puts "  pop_up value = #{pop}" unless pop == 'no'
@@ -74,9 +103,14 @@ begin
 
     #If popup, handle with reset OK or reset Cancel to continue
     if (pop == "msg")
+      g.web_updt.click_no_wait
       popup_txt  = g.jsClick('OK')
       puts "Pop-Up text is #{popup_txt}"
       ws.Range("bk#{row}")['Value'] = popup_txt
+    end
+    if (pop == "no")
+      g.web_updt.click
+      $ie.refresh# If page becomes no display, it can go back to the select file page, so next step can run.
     end
     wb.Save
   end
@@ -89,6 +123,12 @@ rescue Exception => e
   error_present=$@.to_s
 
 ensure #this section is executed even if script goes in error
+    #Go back to the page using 'test_site' and back to the configure->equipinfo page,so next script can run.
+    excel[1][2]=temp
+    $ie.goto(excel[1][2])
+    g.config.click
+    g.equipinfo.click_no_wait
+    g.jsClick('OK')
     # If roe > 0, script is called from controller
     # If roe = 0, script is being ran independently
     #Close and save the spreadsheet and thes web browser.
