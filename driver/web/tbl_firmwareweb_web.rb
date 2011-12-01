@@ -38,12 +38,12 @@ begin
   roe = ARGV[1].to_i
   excel = g.setup(__FILE__)
   wb,ws = excel[0][1,2]
-  
-  g.config.click
-  g.logn_chk(g.updtweb,excel[1])
-  puts '****** Here in driver now *******'
-  g.table_info(1,3,2,4,ws,1)
 
+  g.config.click
+  g.logn_chk(g.equipinfo,excel[1])
+  g.updtweb.click
+  #puts '****** Here in driver now *******'
+  g.table_info(1,3,2,4,ws,1)
 rescue Exception => e
   puts" \n\n **********\n\n #{$@ } \n\n #{e} \n\n ***"
   error_present=$@.to_s
@@ -51,6 +51,8 @@ ensure #this section is executed even if script goes in error
   f = Time.now
   $ie.goto(excel[1][2]) # go back to config page so next script can run
   g.config.click
+  g.equipinfo.click_no_wait
+  g.jsClick('OK')
   # If roe > 0, script is called from controller
   # If roe = 0, script is being ran independently
   #Close and save the spreadsheet and thes web browser.
