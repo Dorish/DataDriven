@@ -222,7 +222,7 @@ module Nav
     end
   end
   # - Firmware Update button
-  def web_updt; save; end 
+  def web_updt; $ie.button(:name, 'Submit'); end
   # - Restart button
   def restart1; save ; end
   # - Reset to Factory Defaults Button
