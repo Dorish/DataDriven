@@ -285,6 +285,24 @@ module Nav
   def dns_suf; det.form(:name, 'configDns').text_field(:id, 'domainSuffix'); end
 
 
+  # - Network settings ipv6 boot mode radio buttons
+  def net_boot6mode(mode); det.radio(:name,'networkBoot6TypeGroup',"#{mode}"); end
+  # - Network settings ipv6 address text field
+  def net_ip6addr; det.form(:name, 'configNetwork').text_field(:id, 'ip6AddressStatic'); end
+  # - Network settings prefix length text field
+  def net_preflen; det.form(:name, 'configNetwork').text_field(:id, 'prefixLengthStatic'); end
+  # - Network settings ipv6 default gateway text field
+  def net_ipv6gateway; det.form(:name, 'configNetwork').text_field(:id, 'defaultIPv6GatewayStatic'); end
+
+
+  # - ipv6 DNS mode radio buttons
+  def dns_ipv6mode(mode); det.radio(:name, 'networkDnsIPv6ModeGroup',"#{mode}"); end
+  # - ipv6 DNS primary DNS server text field
+  def dns_ipv6addr1; det.form(:name, 'configDns').text_field(:id, 'theIPv6Dns'); end
+  # - ipv6 DNS secondary DNS server text field
+  def dns_ipv6addr2; det.form(:name, 'configDns').text_field(:id, 'theIPv6Dns2'); end
+
+
   # - DNS test type  select list
   def dnstype
     obj_retry("selectlist")do;det.form(:name, 'configDnsTest').select_list(:name, 'dnsQueryType'); end
