@@ -98,8 +98,8 @@ begin
 
     #If reset Cancel, do not save
     if (pop == "no")
-      g.save.click
-      #g.jsClick('OK')
+      g.save.click_no_wait
+      g.jsClick('OK')
     end
  
     #read DNS Settings  field values
@@ -119,8 +119,8 @@ begin
     ws.Range("bf#{row}")['Value'] = g.dns_int.value
     ws.Range("bg#{row}")['Value'] = g.dns_suf.value
 
-	  g.save.click
-    #g.jsClick('OK')
+	  g.save.click_no_wait
+    g.jsClick('OK')
     wb.Save
   end
 
