@@ -103,4 +103,5 @@ ensure #this section is executed even if script goes in error
     if roe == 0
       $ie.close
     end
+    puts "\nmanual factory defaults reset is required\n"
 end
