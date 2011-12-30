@@ -63,13 +63,11 @@ begin
     
     #read Firmware TFTP field values
     sleep 1
-    g.edit.click
 	
     ws.Range("bc#{row}")['Value'] = g.tftp_srvr.value
     #ws.Range("bd#{row}")['Value'] = g.tftp_port.value
     ws.Range("be#{row}")['Value'] = g.tftp_file.value
     
-    g.save.click
     wb.Save
   end
 
