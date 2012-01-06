@@ -175,13 +175,13 @@ module  Setup
 
     #collect the Ruby version
     puts "  Collect the Ruby version"
-    r_version = `ruby -v` #get the Ruby version
+    r_version = `ruby -v`.chomp #get the Ruby version
     puts "  This Ruby version is #{r_version}"
     version << ["Ruby version","#{r_version}"]
 
     #collect the Watir version
     puts "  Collect the Watir version"
-    w_version = `ruby -e 'require "watir";puts Watir::VERSION'`
+    w_version = `ruby -e 'require "watir";puts Watir::VERSION'`.chomp
     puts "  This Watir version is #{w_version}"
     version << ["Watir version","#{w_version}"]
 
