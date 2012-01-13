@@ -32,7 +32,7 @@
 
 #Launch the Configure Network Settings ruby script
 #Add library file to the path
-$:.unshift File.dirname(__FILE__).chomp('driver/web')<<'lib' # add library to path
+$:.unshift File.dirname(__FILE__).chomp('driver/web_ipv6')<<'lib' # add library to path
 s = Time.now
 require 'generic'
 require 'watir/process' 
