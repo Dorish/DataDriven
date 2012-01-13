@@ -69,10 +69,9 @@ begin
     g.dns_mode(dnsmode).set
 	    
     # Write DNS Pri Server and Sec Address Seletion	
-    if (g.dns_mode(1).checked? == true)
-      g.dns_addr1.set(ws.Range("l#{row}")['Value'].to_s)
-      g.dns_addr2.set(ws.Range("m#{row}")['Value'].to_s)
-    end
+    g.dns_addr1.set(ws.Range("l#{row}")['Value'].to_s)
+    g.dns_addr2.set(ws.Range("m#{row}")['Value'].to_s)
+	
 	# Write Select Resovle Interval time  
 	interval = ((ws.Range("n#{row}")['Value']).to_i).to_s
 	puts "#{interval}"
@@ -99,29 +98,29 @@ begin
 
     #If reset Cancel, do not save
     if (pop == "no")
-      g.save.click_no_wait
-      g.jsClick('OK')
+      g.save.click
+      #g.jsClick('OK')
     end
  
     #read DNS Settings  field values
     sleep 1
     g.edit.click
     
+    #ws.Range("bc#{row}")['Value'] = g.dns_mode("1")
+	
+	if (g.dns_mode(1).checked? == true)
+     
+	 ws.Range("bc#{row}")['Value'] = "1"
+	 
+	end
+	
+	  ws.Range("bd#{row}")['Value'] = g.dns_addr1.value
+    ws.Range("be#{row}")['Value'] = g.dns_addr2.value
     ws.Range("bf#{row}")['Value'] = g.dns_int.value
     ws.Range("bg#{row}")['Value'] = g.dns_suf.value
 
-    if (g.dns_mode(1).checked? == true)
-      ws.Range("bc#{row}")['Value'] = "1"
-      ws.Range("bd#{row}")['Value'] = g.dns_addr1.value
-      ws.Range("be#{row}")['Value'] = g.dns_addr2.value
-    elsif (g.dns_mode(0).checked? == true)
-      ws.Range("bc#{row}")['Value'] = "0"
-    else
-      ws.Range("bc#{row}")['Value'] = "2"
-    end
-
-	  g.save.click_no_wait
-    g.jsClick('OK')
+	  g.save.click
+    #g.jsClick('OK')
     wb.Save
   end
 
