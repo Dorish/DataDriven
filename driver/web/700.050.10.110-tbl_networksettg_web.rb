@@ -42,7 +42,7 @@ begin
   g.config.click
   g.logn_chk(g.netset,excel[1])
     
-  g.table_info(1,7,2,2,ws)
+  g.table_info(1,11,2,2,ws)
   
 rescue Exception => e
   puts" \n\n **********\n\n #{$@ } \n\n #{e} \n\n ***"

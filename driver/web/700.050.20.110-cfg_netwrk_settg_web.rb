@@ -116,8 +116,10 @@ begin
      ws.Range("bg#{row}")['Value'] = g.net_gateway.value
     elsif (g.net_bootmode(1).checked? == true)
      ws.Range("bd#{row}")['Value'] = "1"
-    else
+    elsif (g.net_bootmode(2).checked? == true)
      ws.Range("bd#{row}")['Value'] = "2"
+    else
+     ws.Range("bd#{row}")['Value'] = "3"
     end  
   
     g.save.click_no_wait
