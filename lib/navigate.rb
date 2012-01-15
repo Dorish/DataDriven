@@ -222,7 +222,7 @@ module Nav
     end
   end
   # - Firmware Update button
-  def web_updt; save; end 
+  def web_updt; $ie.button(:name, 'Submit'); end
   # - Restart button
   def restart1; save ; end
   # - Reset to Factory Defaults Button
@@ -283,6 +283,24 @@ module Nav
   def dns_int; det.form(:name, 'configDns').select_list(:id, 'dnsResolveInterval'); end
   # - DNS domain name suffix text field
   def dns_suf; det.form(:name, 'configDns').text_field(:id, 'domainSuffix'); end
+
+
+  # - Network settings ipv6 boot mode radio buttons
+  def net_boot6mode(mode); det.radio(:name,'networkBoot6TypeGroup',"#{mode}"); end
+  # - Network settings ipv6 address text field
+  def net_ip6addr; det.form(:name, 'configNetwork').text_field(:id, 'ip6AddressStatic'); end
+  # - Network settings prefix length text field
+  def net_preflen; det.form(:name, 'configNetwork').text_field(:id, 'prefixLengthStatic'); end
+  # - Network settings ipv6 default gateway text field
+  def net_ipv6gateway; det.form(:name, 'configNetwork').text_field(:id, 'defaultIPv6GatewayStatic'); end
+
+
+  # - ipv6 DNS mode radio buttons
+  def dns_ipv6mode(mode); det.radio(:name, 'networkDnsIPv6ModeGroup',"#{mode}"); end
+  # - ipv6 DNS primary DNS server text field
+  def dns_ipv6addr1; det.form(:name, 'configDns').text_field(:id, 'theIPv6Dns'); end
+  # - ipv6 DNS secondary DNS server text field
+  def dns_ipv6addr2; det.form(:name, 'configDns').text_field(:id, 'theIPv6Dns2'); end
 
 
   # - DNS test type  select list
