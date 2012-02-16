@@ -125,6 +125,37 @@ class Generic
     $ie.goto($ie.url)
   end
 
+# - Change from a copy of restart_wb method upper.
+# - Used for 700.020.20.110-1-func_fact_defaults_web now.
+# - It can integrate the restart_wb method into one method in the future.
+  def fact_default_restart_wb(cnt_dn = 50)
+    puts "*** restarting card ***"
+    flag = false
+    while flag == false
+      sleep(30)
+      print "pinging card - "
+      ip=/\/\w+\//.match($ie.url).to_s.delete("/")
+      if `ping #{ip}` =~ /Reply from/ # if ping result contains "Reply from"
+        puts "successful"
+        print "seconds remaining - "
+        while cnt_dn > 0
+          print cnt_dn,".. "
+          cnt_dn -= 5
+          sleep 5
+        end
+        flag = true
+        puts"\n", "*** restart completed ***"
+      else
+        puts "unsuccessful"
+      end
+    end
+    proce=get_process_pids("iexplore.exe")
+    kill_processes(proce)
+    sleep 1
+    open_ie(ip)
+  end
+
+
 
   #
   #  - read checkbox status and return set of clear
