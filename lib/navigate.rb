@@ -354,7 +354,9 @@ module Nav
   
 
   # - SNMP access ip addess text field
-  def access_addr(row); det.form(:name, 'configSnmpAccess').text_field(:name, "accessIpAddress?#{row}"); end
+  def access_addr(row)
+    obj_retry("textbox")do;det.form(:name, 'configSnmpAccess').text_field(:name, "accessIpAddress?#{row}"); end
+  end
   # - SNMP access community string text field
   def access_com(row); det.form(:name, 'configSnmpAccess').text_field(:name, "accessCommunityString?#{row}"); end
   # - SNMP access type radio button
@@ -364,7 +366,9 @@ module Nav
 
   
   # - SNMP trap ip addess text field
-  def trap_addr(row); det.form(:name, 'configSnmpTraps').text_field(:name, "tIpA?#{row}"); end
+  def trap_addr(row)
+    obj_retry("textbox")do;det.form(:name, 'configSnmpTraps').text_field(:name, "tIpA?#{row}"); end
+  end
   # - SNMP trap port text field
   def trap_port(row); det.form(:name, 'configSnmpTraps').text_field(:name, "tP?#{row}"); end
   # - SNMP trap community string text field
