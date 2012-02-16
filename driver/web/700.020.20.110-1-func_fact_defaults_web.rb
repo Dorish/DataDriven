@@ -89,11 +89,17 @@ begin
 	puts "Pop-Up text is #{popup_txt}"
     ws.Range("bk#{row}")['Value'] = popup_txt
 	puts "#{bt_mode}"
-     if (bt_mode != "DHCP")
+     if (bt_mode == "Static")
       puts "Manually re-configure IP and press enter to continue..." 
       STDIN.gets
       #enter = gets
      end
+     g.fact_default_restart_wb(20)
+     g.attach_ie(excel[1][2])
+     g.config.click
+     site,name,pswd = excel[1][2,4]
+     g.login(site,name,pswd)# logn_chk method does not work here when call from controller
+     g.equipinfo.click
    else
     g.save.click_no_wait
     popup_txt  =  g.jsClick('Cancel')
