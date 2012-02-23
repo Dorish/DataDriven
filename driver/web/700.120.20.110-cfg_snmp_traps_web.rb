@@ -56,15 +56,14 @@ def traps_input(row,ws)
 end
 	
 def traps_fill(g,input1)
-  #
+  if g.trap_addr(1).enabled? ==false# check and ensure the fields are active before filling
+    g.edit.click
+  end
   # Write data to all 20 rows of the traps table
   input1.each do|input|
     p input # show each row of input data
     i = input[5].to_i
 	  p i
-    if g.trap_addr(i).enabled? ==false# check and ensure the fields are active before filling
-      g.edit.click
-    end
     g.trap_addr(i).set input[0].to_s
     g.trap_port(i).set input[1].to_s.delete(".0")
 	  g.trap_com(i).set input[2].to_s

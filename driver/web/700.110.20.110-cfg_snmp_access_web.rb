@@ -53,14 +53,13 @@ def access_input(row,ws)
     end
 
 def access_fill(g,input1)
-   #
+  if g.access_addr(1).enabled? ==false# check and ensure the fields are active before filling
+    g.edit.click
+  end
    # Write data to all 20 rows of the access table
    input1.each do|input|
       p input # show each row of input data
       i = input[4].to_i
-      if g.access_addr(i).enabled? ==false# check and ensure the fields are active before filling
-        g.edit.click
-      end
       g.access_addr(i).set input[0].to_s
       if input[1].to_i == 1
         g.access_type((i),'1').set
