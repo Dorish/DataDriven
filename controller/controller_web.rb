@@ -29,11 +29,40 @@ $:.unshift File.dirname(__FILE__).sub('controller','lib') #add lib to load path
 require 'generic'
 s = Time.now
 
+# User select one from the existing test suites to execute.
+def select_test_suite(path)
+  spreadsheet_files = Hash.new
+  # search the directory and create the hash with index and spreadsheet names.
+  j=1
+  fl_list = Dir.entries(path).delete_if{ |e| e=~ /^\..*/|| e=~/^.*\.rb/|| e=~/telnet/}
+  fl_list.each { |i|
+    spreadsheet_files[j]=i
+    j=j+1
+  }
+  while 1
+    puts "The following test suites are available for execution:"
+    spreadsheet_files.keys.each { |k|
+      print k,' - ',spreadsheet_files[k].chomp(".xls"),"\n"
+    }
+    puts "Please type the number of the desired suite followed by <Enter>"
+    index = gets.chomp.to_i
+    if spreadsheet_files.has_key?(index)
+      break
+    end
+  end
+  return spreadsheet_files[index]
+end
+
+
 begin
-  puts" \n Executing: #{(__FILE__)}\n\n" #current file
   g = Generic.new
+  # select test suite
+  contr_dir = File.dirname(__FILE__)
+  test_suite = select_test_suite(contr_dir)
+  exec_path = contr_dir + '/' + test_suite
+  puts "Executing: #{exec_path} now"
   
-  setup = g.setup(__FILE__)
+  setup = g.setup(exec_path.chomp('xls'))# chomp('xls')-avoid duplicate of 'xls' in setup method.
   xl = setup[0]
   ws = xl[2] # spreadsheet
   ctrl_ss,rows,site,name,pswd = setup[1]
