@@ -40,14 +40,14 @@ module  Setup
   #    - create time stamped controller spreadsheet
   #    - open IE or attach to existing IE session
   #    - populate the spreadsheet with web support page info
-  def setup(file)
+  def setup(file,rs_name = nil)
     systemos      #Determine whether the OS is Chinese or English
     base_xl = (file).gsub('/','\\').chomp('rb')<<'xls'
     if(ARGV.length != 0)          # called from controller
-      excel = xls_timestamp(base_xl) # called ,connect to existing excel instance
+      excel = xls_timestamp(base_xl,nil,ARGV[2]) # called ,connect to existing excel instance. # ARGV[2] is the result sub-folder name.
       attach_ie(excel[1][2])  # test site ip
     else
-      excel = xls_timestamp(base_xl,'ind') # independent, start new excel instance
+      excel = xls_timestamp(base_xl,'ind',rs_name) # independent, start new excel instance
       open_ie(excel[1][2])
       support(excel[0])
       ver_info(excel[0])
@@ -61,15 +61,15 @@ module  Setup
   #    - connect to excel and open base workbook
   #    - create instance of excel (xl)
   #    - returns a nested array containing spreadsheet and script parameters
-  def xls_timestamp(s_s,*type)
+  def xls_timestamp(s_s,type=nil,rs_name=nil)
     new_ss = (s_s.chomp(".xls")<<'_'<<t_stamp<<(".xls"))
     # common statement assigned with one variable
     if new_ss.include? "controller"
-      new_ss1 = new_ss.sub('controller','result')
+      new_ss1 = new_ss.sub('controller',"result\\#{rs_name}")
       xl = new_xls(s_s,1) #open base controller ss with new excel session
     elsif new_ss.include? "driver"
-      new_ss1 = new_ss.sub(/driver\\.+\\/,'result\\')
-      if (type.to_s == 'ind') # driver was launched independently
+      new_ss1 = new_ss.sub(/driver\\.+\\/,"result\\#{rs_name}\\")
+      if (type == 'ind') # driver was launched independently
         xl = new_xls(s_s,1) #open base driver ss with new excel session
       else # driver was launched by controller
         xl = conn_open_xls(s_s,1) #connect to existing excel session and create new workbook for L2

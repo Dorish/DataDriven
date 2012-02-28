@@ -62,7 +62,14 @@ begin
   exec_path = contr_dir + '/' + test_suite
   puts "Executing: #{exec_path} now"
   
-  setup = g.setup(exec_path.chomp('xls'))# chomp('xls')-avoid duplicate of 'xls' in setup method.
+  # create time stamped result folder
+  rs_folder = g.timeStamp(test_suite.chomp('.xls'))
+  original_dir = Dir.pwd
+  Dir.chdir(contr_dir.gsub("controller","result")) # Change DIR to result folder
+  Dir.mkdir(rs_folder)
+  Dir.chdir(original_dir)# Change DIR back to the original
+  
+  setup = g.setup(exec_path.chomp('xls'),rs_folder)# chomp('xls')-avoid duplicate of 'xls' in setup method.
   xl = setup[0]
   ws = xl[2] # spreadsheet
   ctrl_ss,rows,site,name,pswd = setup[1]
@@ -81,7 +88,7 @@ begin
       path = File.expand_path('driver')
       drvr = path << (ws.Range("j#{row}")['Value'].to_s) # driver path
       log = (drvr.gsub('.rb',"-#{g.t_stamp}.log" )).sub('driver','result')
-      system "ruby #{drvr} #{ctrl_ss} #{row}"# > {log}" # run driver
+      system "ruby #{drvr} #{ctrl_ss} #{row} #{rs_folder}"# > {log}" # run driver # add rs_folder as an ARGV to pass to drivers.
       g.conn_act_xls # reconnect to controller spreadsheet
     end
   end
