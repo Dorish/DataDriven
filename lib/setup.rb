@@ -212,5 +212,18 @@ module  Setup
     @test_site = ws.range('B3').value
     @community_string = ws.range('B5').value # Use the password field for the community string
   end
-           
+
+  #  - Add a time stamp to anything that is passed in as 'variable'
+  #  - Need to accommodate two input conditions -
+  #   1) ¡®variable' => 'variable¡¯_01-05_14-58-45'
+  #   2) ¡®variable.ext¡¯=> 'variable_01-05_14-58-45.ext', where 'ext¡¯can be any extension.
+  def timeStamp(vari)
+    ext = /\.\w*$/.match(vari).to_s # match extension from end of the string
+    if ext
+      vari.chomp(ext)+'_'+t_stamp+ext
+    else
+      vari+'_'+t_stamp
+    end
+  end
+
 end
