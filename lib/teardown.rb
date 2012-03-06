@@ -59,6 +59,13 @@ module  Teardown
     if roe > 0
       ss,wb,ws = conn_act_xls
       ws.Range("l#{roe}")['Value'] = status
+      if status == 'Pass'
+        ws.Range("l#{roe}").Interior['ColorIndex'] = 10
+      elsif status == 'Fail'
+        ws.Range("l#{roe}").Interior['ColorIndex'] = 22
+      elsif  status == 'Abort'
+        ws.Range("l#{roe}").Interior['ColorIndex'] = 6
+      end
       ws.Range("n#{roe}")['Value'] = elapsed
       wb.save
     end
