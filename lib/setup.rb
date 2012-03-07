@@ -192,6 +192,13 @@ module  Setup
     puts "  This IE version is #{v_version[1]} "
     version << ["IE version","#{v_version[1]}"]
     
+    #collent the git SHA-1 hash
+    puts "  Collect the git SHA-1 hash"
+    g_log = `git log -1`
+    g_version = /[0-9a-z]{40}/.match(g_log).to_s
+    puts "  This current git SHA-1 hash is #{g_version[0..6]}"
+    version << ["git SHA-1 hash","#{g_version[0..6]}"]
+
     #write the version in ss
     version.each{|x|
       ver = ws.range("A#{(row)}:B#{(row)}") #add version info to ss
