@@ -3,6 +3,7 @@ require 'win32ole'
 
 $:.unshift File.dirname(__FILE__).sub('controller','lib') #add lib to load path
 require 'generic'
+include Setup
 #begin this flags used to decrease the amount of reset --add by Ryan
 $_flag_rd = 0
 $_flag_wr = 0
@@ -11,10 +12,10 @@ $_flag_cfg = 0
 begin
 
  #Get the path of telnet spreedsheet files from controller_telnet.xls --add by Ryan
-def getpath()
+def getpath(rs_folder)
   g = Generic.new
-
-  setup = g.setup(__FILE__)
+  
+  setup = g.setup(__FILE__,rs_folder)
   xl = setup[0]
   ss = xl[0]
   wb = xl[1]
@@ -222,10 +223,10 @@ end
 
 
 # Execute telnet script test
-def singletelnet(telname)
+def singletelnet(telname,rs_folder)
       #base_ss = File.expand_path(File.dirname(__FILE__)) + '/' + telname
       base_ss = telname
-      new_ss = (base_ss.chomp(".xls")<<'_'<<Time.now.strftime("%m-%d_%H-%M-%S")<<(".xls")).gsub('driver/telnet','result')
+      new_ss = (base_ss.chomp(".xls")<<'_'<<Time.now.strftime("%m-%d_%H-%M-%S")<<(".xls")).gsub('driver/telnet',"result/#{rs_folder}")
       ss = WIN32OLE::new('excel.Application')
       ss.DisplayAlerts = false #Stops excel from displaying alerts
       ss.Visible = true # For debug
@@ -343,15 +344,24 @@ def singletelnet(telname)
 
  end
 
+# create time stamped result folder
+contr_dir = File.dirname(__FILE__)
+test_suite = (__FILE__).sub(/#{contr_dir}\//, '') # Get the exactly filename
+rs_folder = timeStamp(test_suite.chomp('rb')) # time stamped result folder name
+original_dir = Dir.pwd
+Dir.chdir(contr_dir.gsub("controller","result")) # Change DIR to result folder
+Dir.mkdir(rs_folder)
+Dir.chdir(original_dir)# Change DIR back to the original
+
  telarray=Array.new
- telarray= getpath()
+ telarray= getpath(rs_folder)
  telstatus=Hash.new
 #Execute the telnet script by order
 
 #for j in 0...110
  for i in 0...telarray.length
   telstatuss=telarray[i].chomp(".xls")
-  telstatus[telstatuss]=singletelnet(telarray[i])
+  telstatus[telstatuss]=singletelnet(telarray[i],rs_folder)
  end
  #puts "now we are in"
  #puts j
