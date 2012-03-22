@@ -25,20 +25,18 @@ end
  end
 
  if ARGV.length > 0
-   base_ss = argu_value(ARGV)
+   base_ss = argu_value(ARGV[0])
  else
    base_ss = enter_value()
  end
 
-
-  new_ss = (base_ss.chomp(".xls")<<'_'<<Time.now.strftime("%m-%d_%H-%M-%S")<<(".xls")).gsub('driver/telnet','result')
+ # Add time stamp to the path and put the sub folder of result into the path when run from controller
+ new_ss = (base_ss.gsub('/','\\').chomp(".xls")<<'_'<<Time.now.strftime("%m-%d_%H-%M-%S")<<(".xls")).gsub(/driver\\.+\\/,"result\\#{ARGV[3]}\\")
  
-  
   ss = WIN32OLE::new('excel.Application')
   ss.DisplayAlerts = false #Stops excel from displaying alerts
   ss.Visible = true # For debug
   wb = ss.Workbooks.Open(base_ss)
-  new_ss.gsub!('/','\\')
   wb.SaveAs(new_ss)
   ws = wb.Worksheets(1)
 
