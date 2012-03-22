@@ -1,5 +1,6 @@
-require 'net/telnet'
-require 'win32ole'
+$:.unshift File.dirname(__FILE__).chomp('driver/telnet')<<'lib' # add library to path
+require 'generic'
+s = Time.now
 
 begin
 
@@ -30,15 +31,15 @@ end
    base_ss = enter_value()
  end
 
+ puts" \n Executing: #{base_ss}\n\n" # print current filename
+ g = Generic.new
+ roe = ARGV[2].to_i
  # Add time stamp to the path and put the sub folder of result into the path when run from controller
  new_ss = (base_ss.gsub('/','\\').chomp(".xls")<<'_'<<Time.now.strftime("%m-%d_%H-%M-%S")<<(".xls")).gsub(/driver\\.+\\/,"result\\#{ARGV[3]}\\")
- 
-  ss = WIN32OLE::new('excel.Application')
-  ss.DisplayAlerts = false #Stops excel from displaying alerts
-  ss.Visible = true # For debug
-  wb = ss.Workbooks.Open(base_ss)
-  wb.SaveAs(new_ss)
-  ws = wb.Worksheets(1)
+
+ xl =g.new_xls(base_ss,1)
+ g.save_as_xls(xl,new_ss)
+ ws = xl[2]
 
   ip = ws.Range("B3")['Value'].to_s #Define Test Site
   login_name = ws.Range("B4")['Value'].to_s #Define Login Name
@@ -251,13 +252,13 @@ end
     verify_data(telnet, ws, current_row, total_rows)
   end
 
-  puts "\n\nTest complete!\nStatus is #{ws.Range("B16")['Value']}"
+  f = Time.now
 rescue Exception => e
+  f = Time.now
   puts "Script failed on row: #{current_row}"
   puts $@.to_s #Array of backtrace
   puts $! #Exception Information
+  error_present=$@.to_s
 ensure
-  wb.save
-  wb.close
-  ss.quit
+  g.tear_down_d(xl,s,f,roe,error_present)
 end
