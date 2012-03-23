@@ -34,7 +34,7 @@ def select_test_suite(path)
   spreadsheet_files = Hash.new
   # search the directory and create the hash with index and spreadsheet names.
   j=1
-  fl_list = Dir.entries(path).delete_if{ |e| e=~ /^\..*/|| e=~/^.*\.rb/|| e=~/telnet/}
+  fl_list = Dir.entries(path).delete_if{ |e| e=~ /^\..*/|| e=~/^.*\.rb/}
   fl_list.each { |i|
     spreadsheet_files[j]=i
     j=j+1
@@ -75,6 +75,7 @@ begin
   ctrl_ss,rows,site,name,pswd = setup[1]
 
   # login now so drivers won't have to
+  # This web login is not necessary to telnet run
   g.config.click    
   g.login(site,name,pswd)
   g.equipinfo.click
@@ -86,7 +87,11 @@ begin
     if ws.Range("e#{row}")['Value'] == true
       print" Run driver script #{row - 1} -- "
       path = File.expand_path('driver')
-      drvr = path << (ws.Range("j#{row}")['Value'].to_s) # driver path
+      if test_suite.include?'telnet'
+        drvr = path << '/telnet/telnet_prototype.rb' << ' ' << ws.Range("j#{row}")['Value'].to_s# Two arguments, telnet agent path and driver name
+      else
+        drvr = path << (ws.Range("j#{row}")['Value'].to_s) # watir driver path
+      end
       log = (drvr.gsub('.rb',"-#{g.t_stamp}.log" )).sub('driver','result')
       system "ruby #{drvr} #{ctrl_ss} #{row} #{rs_folder}"# > {log}" # run driver # add rs_folder as an ARGV to pass to drivers.
       g.conn_act_xls # reconnect to controller spreadsheet
