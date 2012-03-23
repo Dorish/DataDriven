@@ -35,8 +35,8 @@ end
  g = Generic.new
  roe = ARGV[2].to_i
  # Add time stamp to the path and put the sub folder of result into the path when run from controller
- new_ss = (base_ss.gsub('/','\\').chomp(".xls")<<'_'<<Time.now.strftime("%m-%d_%H-%M-%S")<<(".xls")).gsub(/driver\\.+\\/,"result\\#{ARGV[3]}\\")
-
+ new_ss = g.timeStamp(base_ss.gsub('/','\\')).gsub(/driver\\.+\\/,"result\\#{ARGV[3]}\\")
+ 
  xl =g.new_xls(base_ss,1)
  g.save_as_xls(xl,new_ss)
  ws = xl[2]
