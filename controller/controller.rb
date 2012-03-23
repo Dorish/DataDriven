@@ -31,26 +31,22 @@ s = Time.now
 
 # User select one from the existing test suites to execute.
 def select_test_suite(path)
-  spreadsheet_files = Hash.new
   # search the directory and create the hash with index and spreadsheet names.
-  j=1
   fl_list = Dir.entries(path).delete_if{ |e| e=~ /^\..*/|| e=~/^.*\.rb/}
-  fl_list.each { |i|
-    spreadsheet_files[j]=i
-    j=j+1
-  }
   while 1
+    index = 0
     puts "The following test suites are available for execution:"
-    spreadsheet_files.keys.each { |k|
-      print k,' - ',spreadsheet_files[k].chomp(".xls"),"\n"
-    }
+    fl_list.each do |i|
+      print index+1,' - ',i.chomp(".xls"),"\n"
+      index = index+1
+    end
     puts "Please type the number of the desired suite followed by <Enter>"
-    index = gets.chomp.to_i
-    if spreadsheet_files.has_key?(index)
+    input_str = gets.chomp.to_i
+    if fl_list.include?(fl_list[input_str-1])
       break
     end
   end
-  return spreadsheet_files[index]
+  return fl_list[input_str-1] # return the spreadsheet name
 end
 
 
