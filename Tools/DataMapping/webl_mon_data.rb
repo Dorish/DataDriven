@@ -46,27 +46,12 @@ end
 #    - returns a nested array containing spreadsheet and script parameters
 def xls_timestamp(g,s_s,type=nil,rs_name=nil)
   new_ss = (s_s.chomp(".xls")<<'_'<<g.t_stamp<<(".xls"))
-  puts new_ss
-  # common statement assigned with one variable
-  if new_ss.include? "controller"
-    new_ss1 = new_ss.sub('controller',"result\\#{rs_name}")
-    xl = g.new_xls(s_s,1) #open base controller ss with new excel session
-  elsif new_ss.include? "driver"
-    new_ss1 = new_ss.sub(/driver\\.+\\/,"result\\#{rs_name}\\")
-    if (type == 'ind') # driver was launched independently
-      xl = g.new_xls(s_s,1) #open base driver ss with new excel session
-    else # driver was launched by controller
-      xl = g.conn_open_xls(s_s,1) #connect to existing excel session and create new workbook for L2
-    end
-  elsif new_ss.include? "Tools"
-    new_ss1 = new_ss.sub(/Tools\\.+\\/,"result\\#{rs_name}\\")
-    if (type == 'ind') # driver was launched independently
-      xl = g.new_xls(s_s,1) #open base driver ss with new excel session
-    else # driver was launched by controller
-      xl = g.conn_open_xls(s_s,1) #connect to existing excel session and create new workbook for L2
-    end
+  new_ss1 = new_ss.sub(/Tools\\.+\\/,"result\\#{rs_name}\\")
+  if (type == 'ind') # driver was launched independently
+    xl = g.new_xls(s_s,1) #open base driver ss with new excel session
+  else # driver was launched by controller
+    xl = g.conn_open_xls(s_s,1) #connect to existing excel session and create new workbook for L2
   end
-
   ws = xl[2] # worksheet
 
   param = Array.new
@@ -102,7 +87,7 @@ def support(g,xl)
     end
   end
   os = ws.range("A#{(row)}:B#{(row)}") #add system os info to ss
-  os.value = ["Operating System Language","#{@@os}"]
+  os.value = ["Operating System Language","#{$os}"]
   os.Interior['ColorIndex'] = 43  # change background color
   os.Borders.ColorIndex = 1        # add border
   ws.range("A:B").ColumnWidth = 255 #255 is the maximum column width
@@ -115,18 +100,19 @@ end
 def systemos
   lang = `systeminfo`
   if lang =~ /en-us*/
-    @@os          = "English"
-    @@titl          = "Connect to "
-    @@ok       ="OK"
-    @@cancel    = "Cancel"
+    $os          = "English"
+    $titl          = "Connect to "
+    $ok       ="OK"
+    $cancel    = "Cancel"
   elsif lang =~ /zh-cn*/
-    @@os           = "Chinese"
-    @@titl           = "连接到 "
-    @@ok        ="确定"
-    @@cancel      = "取消"
+    $os           = "Chinese"
+    $titl           = "连接到 "
+    $ok        ="确定"
+    $cancel      = "取消"
   end
-  puts "This OS is #{@@os}"
+  puts "This OS is #{$os}"
 end
+
 # - Support table
 #def supprt; det.table(:index, 2).to_a .compact; end
 def supprt
