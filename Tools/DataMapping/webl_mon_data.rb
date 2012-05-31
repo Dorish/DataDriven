@@ -140,16 +140,17 @@ begin
 
   #Clean up the links array for the navigation frame
 
-  for i in 0..g.links_array[1].size-1 do
+  for i in 0..g.links_array[3].size-1 do
     begin
       #We don't want to click links with parenthesis for this test case
-      unless g.links_array[1][i].text =~ /\(\d*\)/ then
-        puts "Trying link: #{g.links_array[1][i].text}"
-        $ie.frame(:index, 2).link(:id, g.links_array[1][i].id).click
+      unless g.links_array[3][i].text =~ /\(\d*\)/ then
+        puts "Trying link: #{g.links_array[3][i].text}"
+        $ie.frame(:index, 4).link(:id, g.links_array[3][i].id).click
         sleep(2) #Wait for the table to finish populating
-        if g.links_array[1][i-1].text =~ /\[\d*\]/ then
-          g.table_to_ss(3,ws,g.links_array[1][i].text + ' ' + $&)
-        else g.table_to_ss(3,ws,g.links_array[1][i].text)
+        if g.links_array[3][i-1].text =~ /\[\d*\]/ then
+          g.table_to_ss(5,ws,g.links_array[3][i].text + ' ' + $&)
+        else
+          g.table_to_ss(5,ws,g.links_array[3][i].text)
         end
       end
     rescue => e
