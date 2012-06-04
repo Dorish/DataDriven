@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project_test_case>
+<id></id>
+<test_title></test_title>
+<test_duration></test_duration>
+<test_type></test_type>
+<test_phase></test_phase>
+<rec_test_configs></rec_test_configs>
+<test_resources></test_resources>
+<test_status>Not yet attempted</test_status>
+<test_attempts>0</test_attempts>
+<last_attempt_date>N/A</last_attempt_date>
+<last_attempt_time>N/A</last_attempt_time>
+<actual_duration></actual_duration>
+<testers></testers>
+<fault_report_id></fault_report_id>
+<change_req_id></change_req_id>
+<results_obtained></results_obtained>
+<version_tested></version_tested>
+<build_tested></build_tested>
+<external_link2></external_link2>
+<result_notes></result_notes>
+<requirement></requirement>
+<create_date></create_date>
+<create_time></create_time>
+<update_date></update_date>
+<update_time></update_time>
+<create_user_id></create_user_id>
+<update_user_id></update_user_id>
+<prerequisites></prerequisites>
+<test_description></test_description>
+<test_result></test_result>
+<notes1></notes1>
+<notes2></notes2>
+<external_link></external_link>
+<priority></priority>
+<history_entry>
+<time></time>
+<date></date>
+<type>ET_NEW</type>
+<old_status>Not yet attempted</old_status>
+<new_status>Not yet attempted</new_status>
+<num_tries>0</num_tries>
+<phase></phase>
+<version></version>
+<build></build>
+</history_entry>
+</project_test_case>
+
