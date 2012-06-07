@@ -8,45 +8,36 @@ require 'fileutils'
 require "rexml/document"
 include REXML
 
-#$dir_test_case = ['D:\enpc_work\TestLog\Test Cases']
-#$dir_project = ['D:\enpc_work\TestLog\Project']
-$dir_test_case = ['I:\lmg test engineering\TestLog\Test Cases']
-$dir_project = ['I:\LMG TEST ENGINEERING\TestLog\Project\project_test\Project Test Cases']
+$dir_test_case = ['D:\enpc_work\TestLog\Test Cases']
+$dir_project = ['D:\enpc_work\TestLog\Project']
+#$dir_test_case = ['I:\lmg test engineering\TestLog\Test Cases']
+#$dir_project = ['I:\LMG TEST ENGINEERING\TestLog\Project\project_test\Project Test Cases']
 $template_case_name = "test_case_template.xml"
 
 # User select the card type for create its test case.
-def select_card_type(cardtypes_list)
+def select_card_type(cardtypes_map)
   puts "The following card types are available to be selected:"
-  index = 0
-  while(index < cardtypes_list.length )
-    print index + 1,' - ',cardtypes_list[index],"\n"
-    index = index + 1
-  end
-  puts "Please type the number of the desired type followed by <Enter>"
-  input_str = gets.chomp.to_i
-  return cardtypes_list[input_str - 1]
+  cardtypes_map.each {|key, value|
+    print "#{key}",' - ',"#{value}","\n"
+    }
+    while 1
+      puts "Please type the number of the desired type followed by <Enter>"
+      input_str =gets.chomp
+      if cardtypes_map.has_key?(input_str)
+          break
+      end
+    end
+  return input_str
 end
 
 #Pickup all card types from spreadsheet
 def pickup_all_cards_type(work_sheet)
-    cardtypes_list = Array.new(4)
-    cardtypes_list[0] = work_sheet.Range("H1")['Value']
-    cardtypes_list[1] = work_sheet.Range("I1")['Value']
-    cardtypes_list[2] = work_sheet.Range("J1")['Value']
-    cardtypes_list[3] = work_sheet.Range("K1")['Value']
-    return cardtypes_list
-end
-
-# select the column number for selected card type
-def select_type_column(card_type,work_sheet)
-  columns = ['H','I','J','K']
-  index = nil
-  columns.each { |i|
-    if(card_type == work_sheet.Range(i + '1')['Value'])
-      index = i
-    end
-  }
-  return index
+    cardtypes_hash = Hash.new()
+    cardtypes_hash["H"] = work_sheet.Range("H1")['Value']
+    cardtypes_hash["I"] = work_sheet.Range("I1")['Value']
+    cardtypes_hash["J"] = work_sheet.Range("J1")['Value']
+    cardtypes_hash["K"] = work_sheet.Range("K1")['Value']
+    return cardtypes_hash
 end
 
 # pick up all test cases which user selected in the spreadsheet
@@ -149,11 +140,10 @@ def create_folder(case_name)
     else
       path = path +"\\" + substr
     end
-
     target_path = "#{$dir_project}\\#{path}"
     source_path = "#{$dir_test_case}\\#{path}"
-
     Dir.mkdir target_path unless File.exist? target_path
+
     father_dir =  File.dirname(target_path)
     tgp_file = "#{source_path}.tgp"
     if File.exists?(tgp_file) && !File.exists?("#{target_path}.tgp")
@@ -171,9 +161,8 @@ begin
   work_sheet = setup[2]
 
  cardtypes_list = pickup_all_cards_type(work_sheet)
- card_type = select_card_type(cardtypes_list)
- card_type_column = select_type_column(card_type,work_sheet)
-
+ card_type_column = select_card_type(cardtypes_list)
+ 
  cases_list = pickup_selected_cases(card_type_column,work_sheet)
  create_executable_project(cases_list,work_sheet)
 
