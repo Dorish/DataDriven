@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<records>
+ <dataPoint>
+  <DataIdentifier>5402</DataIdentifier>
+  <DataLabel>Return Air Sensor Event Control</DataLabel>
+  <HMI_Reg>U202</HMI_Reg>
+  <HMI_Label>Return Sensor Alarms</HMI_Label>
+  <HMI_Page>U-Set Alarms</HMI_Page>
+ </dataPoint>
+ <dataPoint>
+  <DataIdentifier>5022</DataIdentifier>
+  <DataLabel>Return Air Over Temp Threshold</DataLabel>
+  <HMI_Reg>U203</HMI_Reg>
+  <HMI_Label>High Return Temperature</HMI_Label>
+  <HMI_Page>U-Set Alarms</HMI_Page>
+ </dataPoint>
+ <dataPoint>
+  <DataIdentifier>5334</DataIdentifier>
+  <DataLabel>Return Air Under Temp Threshold</DataLabel>
+  <HMI_Reg>U204</HMI_Reg>
+  <HMI_Label>Low Return Temperature</HMI_Label>
+  <HMI_Page>U-Set Alarms</HMI_Page>
+ </dataPoint>
+ <dataPoint>
+  <DataIdentifier>5033</DataIdentifier>
+  <DataLabel>High Return Humidity Threshold</DataLabel>
+  <HMI_Reg>U205</HMI_Reg>
+  <HMI_Label>High Return Humidity</HMI_Label>
+  <HMI_Page>U-Set Alarms</HMI_Page>
+ </dataPoint>
+ <dataPoint>
+  <DataIdentifier>5035</DataIdentifier>
+  <DataLabel>Low Return Humidity Threshold</DataLabel>
+  <HMI_Reg>U206</HMI_Reg>
+  <HMI_Label>Low Return Humidity</HMI_Label>
+  <HMI_Page>U-Set Alarms</HMI_Page>
+ </dataPoint>
+ <dataPoint>
+  <DataIdentifier>5401</DataIdentifier>
+  <DataLabel>Ext Air Sensor A Event Control</DataLabel>
+  <HMI_Reg>U207</HMI_Reg>
+  <HMI_Label>Sensor A Alarms</HMI_Label>
+  <HMI_Page>U-Set Alarms</HMI_Page>
+ </dataPoint>
+ <dataPoint>
+  <DataIdentifier>5337</DataIdentifier>
+  <DataLabel>Ext Air Sensor A Over Temp Threshold</DataLabel>
+  <HMI_Reg>U208</HMI_Reg>
+  <HMI_Label>High Temperature Sensor A</HMI_Label>
+  <HMI_Page>U-Set Alarms</HMI_Page>
+ </dataPoint>
+ <dataPoint>
+  <DataIdentifier>5338</DataIdentifier>
+  <DataLabel>Ext Air Sensor A Under Temp Threshold</DataLabel>
+  <HMI_Reg>U209</HMI_Reg>
+  <HMI_Label>Low Temperature Sensor A</HMI_Label>
+  <HMI_Page>U-Set Alarms</HMI_Page>
+ </dataPoint>
+ <dataPoint>
+  <DataIdentifier>5348</DataIdentifier>
+  <DataLabel>Ext Air Sensor A High Humidity Threshold</DataLabel>
+  <HMI_Reg>U210</HMI_Reg>
+  <HMI_Label>High Humidity Sensor A</HMI_Label>
+  <HMI_Page>U-Set Alarms</HMI_Page>
+ </dataPoint>
+</records>
