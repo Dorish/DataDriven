@@ -46,7 +46,7 @@ end
 begin
   g = Generic.new
   
-  excel_name = File.dirname(__FILE__) + '\\' + 'Telnet_diagnostic_template.xls'
+  excel_name = File.dirname(__FILE__) + '\\' + 'Telnet_diagnostic_parameters.xls'
   setup = g.new_xls(excel_name,1)
   spreat_sheet = setup[0]
   work_book = setup[1]
