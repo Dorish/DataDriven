@@ -3,16 +3,22 @@
 
 $:.unshift File.dirname(__FILE__).sub('Tools','lib') #add lib to load path
 require 'generic'
-desired_location = '4,3'  # the guide of '4,3' can navigate to system operation info menu item,
+$desired_location = '4,3'  # the guide of '4,3' can navigate to system operation info menu item,
 
-def get_input_parameters(work_sheet)
-  input_parameters = Hash.new()
-  input_parameters["ip_address"] = work_sheet.Range("A2")['Value']
-  input_parameters["user_name"] = work_sheet.Range("B2")['Value']
-  input_parameters["password"] = work_sheet.Range("C2")['Value']
-  input_parameters["interval_time"] = work_sheet.Range("D2")['Value']
-  input_parameters["loop_times"] = work_sheet.Range("E2")['Value']
-  return input_parameters
+def get_input_parameters(work_sheet) 
+  index = 2
+  input_parameter_list = Array.new()
+  while(work_sheet.Range("A#{index}")['Value'] != nil)
+    input_parameter = Hash.new()
+    input_parameter["ip_address"] = work_sheet.Range("A#{index}")['Value']
+    input_parameter["user_name"] = work_sheet.Range("B#{index}")['Value']
+    input_parameter["password"] = work_sheet.Range("C#{index}")['Value']
+    input_parameter["interval_time"] = work_sheet.Range("D#{index}")['Value']
+    input_parameter["loop_times"] = work_sheet.Range("E#{index}")['Value']
+    input_parameter_list.push(input_parameter)
+    index = index + 1
+  end
+  return input_parameter_list
  end
 
 def is_card_available(ip)
@@ -43,25 +49,11 @@ def add_timestamp(logging_file)
   logging_file.puts '-------------------------------------------------'
 end
 
-begin
-  g = Generic.new
-
-
-  # open spreadsheet and hide after 3 seconds
-  excel_name = File.dirname(__FILE__) + '\\' + 'telnet_logging.xls'
-  setup = g.new_xls(excel_name,1)
-  spread_sheet = setup[0]
-  work_book = setup[1]
-  work_sheet = setup[2]
-  sleep 3
-  spread_sheet.visible = false
-
-  # get all input parameters
-  input_parameters = get_input_parameters(work_sheet)
+def operate_telnet_logging(generic, input_parameters)
   ip_address = input_parameters["ip_address"]
   interval_time = input_parameters["interval_time"]
   loop_times = input_parameters["loop_times"]
-  
+
   # open the output file,
   output_file_name = File.dirname(__FILE__) + '\\' + ip_address + '_' + Time.now.strftime("%m-%d_%H-%M-%S") + '.txt'
   logging_file = File.new(output_file_name, "a+")
@@ -77,14 +69,14 @@ begin
 
     if is_available
       # connect to card from telnet
-      telnet = g.telnet_connect(ip_address, input_parameters["user_name"], input_parameters["password"])
+      telnet = generic.telnet_connect(ip_address, input_parameters["user_name"], input_parameters["password"])
 
       # navigate to desired location
-      navigate_to_location(telnet, desired_location,logging_file)
+      navigate_to_location(telnet, $desired_location,logging_file)
 
       # terminate telnet
       telnet.close
-        
+
       else
       logging_file.puts("#{ip_address} did not respond to the ping request")
     end
@@ -93,6 +85,28 @@ begin
     sleep (interval_time.to_i)*60
     loop_times = loop_times.to_i - 1
   end
+  logging_file.close
+end
+
+begin
+  g = Generic.new
+
+  # open spreadsheet and hide after 3 seconds
+  excel_name = File.dirname(__FILE__) + '\\' + 'telnet_logging.xls' # use this path when we run the script in ruby environment
+  #excel_name = Dir.pwd + '/' + 'telnet_logging.xls' # use this path when we create the executable file use Exerb
+  setup = g.new_xls(excel_name,1)
+  spread_sheet = setup[0]
+  work_book = setup[1]
+  work_sheet = setup[2]
+  sleep 3
+  spread_sheet.visible = false
+
+  # get all input parameters
+  input_parameters_list = get_input_parameters(work_sheet)
+
+  input_parameters_list.each{|input_parameters|
+    operate_telnet_logging(g,input_parameters)
+  }
 
 rescue Exception => e
   puts "Telnet logging failed: #{e}\n\n"
@@ -100,5 +114,4 @@ rescue Exception => e
 ensure
   work_book.close
   spread_sheet.quit
-  logging_file.close
 end
