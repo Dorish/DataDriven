@@ -1,7 +1,7 @@
 # To change this template, choose Tools | Templates
 # and open the template in the editor.
 
-$:.unshift File.dirname(__FILE__).sub('Tools','lib') #add lib to load path
+$:.unshift File.dirname(__FILE__).sub('Tools/Telnet','lib') #add lib to load path
 require 'generic'
 $desired_location = '4,3'  # the guide of '4,3' can navigate to system operation info menu item,
 
