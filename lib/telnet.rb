@@ -22,7 +22,6 @@ telnet 2-modified telnet_op_read with exit
 =end
 
 require 'net/telnet'
-require 'watir/ie'  #TODO watir should not be required here
 
 #TODO documentation of methods and variables needs to be completed
 #TODO implement newer methods from the keyword driven model
