@@ -66,7 +66,7 @@ end
 
 def collect_log(ip,cnt,dly)
 
-  log_name = (File.dirname(__FILE__).sub('Tools','result')<<'/'<<"mstp_log_"<<Time.now.to_a.reverse[5..9].to_s<<(".xls")).gsub('/','\\')
+  log_name = (File.dirname(__FILE__).sub('Tools/Webcard','result')<<'/'<<"mstp_log_"<<Time.now.to_a.reverse[5..9].to_s<<(".xls")).gsub('/','\\')
   p log_name
   $ip = ip
   $ie = Watir::IE.new
@@ -139,8 +139,44 @@ def collect_log(ip,cnt,dly)
 end
 
 
-ip  = "126.4.10.243"
-cnt = 5 # how many times to log
-dly = 15 # log interval time in seconds
+# Initialize variables
+host = 'C:/WINDOWS/system32/drivers/etc/hosts'
+valid_ip = /^(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/
+testsite = /^(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\s+(test_site)/
+
+ip1 = nil
+ip2 = nil
+
+File.open(host).each do|line|
+  if line =~ testsite
+    ip1 = $1  # $1 is the group in the valid_ip regex
+    print "Existing test_site IP address is: ",ip1
+  end
+end
+
+ip = ip1    # ip = test_site
+
+puts "\n\nTo keep the existing IP address, press <Enter>"
+print "-OR- Type new IP address followed by <Enter>: "
+
+ip2 = gets.chomp
+if ip2 != ''
+  while ip2 !~ valid_ip
+    print "\nPlease type a valid IP address followed by <Enter>: "
+    ip2 = gets.chomp
+  end
+  ip = ip2    # ip = user entry
+end
+
+# how many times to log
+puts "\nType number of time to log data followed by <Enter>"
+cnt = gets.chomp.to_i
+
+# log interval time in seconds
+puts "\nType the log interval(in seconds) followed by <Enter>"
+dly = gets.chomp.to_i
+
+puts cnt.class
+puts dly.class
 
 collect_log(ip,cnt,dly)
