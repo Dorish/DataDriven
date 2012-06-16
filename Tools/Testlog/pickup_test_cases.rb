@@ -1,7 +1,7 @@
 # To change this template, choose Tools | Templates
 # and open the template in the editor.
 
-$:.unshift File.dirname(__FILE__).sub('Tools','lib') #add lib to load path
+$:.unshift File.dirname(__FILE__).sub('Tools/Testlog','lib') #add lib to load path
 require 'generic'
 require 'find'
 require 'fileutils'
