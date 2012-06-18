@@ -1,9 +1,19 @@
 # To change this template, choose Tools | Templates
 # and open the template in the editor.
 
-$:.unshift File.dirname(__FILE__).sub('Tools/Telnet','lib') #add lib to load path
+$:.unshift File.dirname(__FILE__).sub('Tools','lib') #add lib to load path
 require 'generic'
 $desired_location = '4,3'  # the guide of '4,3' can navigate to system operation info menu item,
+
+def tn_close(telnet,navigate_str)
+  esc = "\x1b"
+  navigation = navigate_str.split(',')
+  esc_num = navigation.length + 2 #need to press esc 2 times more from main menu to exit telnet session
+  esc_num.times do
+    telnet.write(esc) {|c| print c}
+    telnet.waitfor(/\?>|<Esc> Ends Session|[Bb]ye/) {|c| print c}
+  end
+end
 
 def get_input_parameters(work_sheet) 
   index = 2
@@ -83,13 +93,14 @@ begin
   work_book = setup[1]
   work_sheet = setup[2]
   sleep 3
-  spread_sheet.visible = false
+  spread_sheet.visible = true
 
   # get all input parameters
   input_parameters_list = get_input_parameters(work_sheet)
   loop_times = input_parameters_list[0]["loop_times"]
   interval_time = input_parameters_list[0]["interval_time"]
-
+  work_book.close
+  spread_sheet.quit
   while(loop_times.to_i > 0)
     input_parameters_list.each{|input_parameters|
       ip_address = input_parameters["ip_address"]
@@ -100,15 +111,36 @@ begin
 
       # add the time stamp at the beginning of log file.
       add_timestamp(logging_file)
-
       if is_available
-        # connect to card from telnet
-        telnet = g.telnet_connect(ip_address, input_parameters["user_name"], input_parameters["password"])
-        # navigate to desired location
-        navigate_to_location(telnet, $desired_location,logging_file)
-        # terminate telnet
-        telnet.close
-        else
+        tries = 0
+        begin
+          # connect to card from telnet
+          telnet = g.telnet_connect(ip_address, input_parameters["user_name"], input_parameters["password"])
+          # navigate to desired location
+          navigate_to_location(telnet, $desired_location,logging_file)
+          # close telnet session from card side
+          tn_close(telnet,$desired_location)
+          # terminate telnet
+          telnet.close
+        rescue Exception=>e
+          sleep 1
+          tries += 1
+          if telnet == nil # build telnet connection failed.
+            puts "telnet to #{ip_address} failed"
+            logging_file.puts("telnet to #{ip_address} failed")
+          else
+           # tn_close(telnet,$desired_location) # if this sentence error, no handle script for it.
+            telnet.close
+          end
+          if is_card_available(ip_address)==true # card is still available - retry
+            puts "retry #{tries} times"
+            retry if tries <= 9
+            puts "retry limit reached!"
+          else # card is not available - log that 'card did not respond ' and continue running
+            logging_file.puts("#{ip_address} did not respond to the ping request")
+          end
+        end
+      else
         logging_file.puts("#{ip_address} did not respond to the ping request")
       end
 
@@ -118,12 +150,11 @@ begin
     }
     sleep (interval_time.to_i)*60
     loop_times = loop_times.to_i - 1
+      
 end
 
 rescue Exception => e
   puts "Telnet logging failed: #{e}\n\n"
   puts $@.to_s
 ensure
-  work_book.close
-  spread_sheet.quit
 end
