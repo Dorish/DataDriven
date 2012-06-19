@@ -86,18 +86,34 @@ begin
   g = Generic.new
 
   # open spreadsheet and hide after 3 seconds
-  excel_name = File.dirname(__FILE__) + '\\' + 'telnet_logging.xls' # use this path when we run the script in ruby environment
-  #excel_name = Dir.pwd + '/' + 'telnet_logging.xls' # use this path when we create the executable file use Exerb
-  setup = g.new_xls(excel_name,1)
-  spread_sheet = setup[0]
-  work_book = setup[1]
-  work_sheet = setup[2]
-  sleep 3
-  spread_sheet.visible = true
+#  excel_name = File.dirname(__FILE__) + '\\' + 'telnet_logging.xls' # use this path when we run the script in ruby environment
+#  #excel_name = Dir.pwd + '/' + 'telnet_logging.xls' # use this path when we create the executable file use Exerb
+#  setup = g.new_xls(excel_name,1)
+#  spread_sheet = setup[0]
+#  work_book = setup[1]
+#  work_sheet = setup[2]
+#  sleep 3
+#  spread_sheet.visible = true
 
   # get all input parameters
-  input_parameters_list = get_input_parameters(work_sheet)
-  loop_times = input_parameters_list[0]["loop_times"]
+  # input_parameters_list = get_input_parameters(work_sheet)
+
+  #============================================================================
+
+  csv_file = File.dirname(__FILE__) + '\\' + 'telnet_logging.csv' # use this path when we run the script in ruby environment
+
+ card_info = open(csv_file).map do |line|
+    if line !~ /^IP/ # ignore column header row
+      info = line.to_a
+      puts "#{info}"
+      p info.class
+    end
+  
+  end
+   #============================================================================
+
+puts card_info
+  loop_times = card_info[4]["loop_times"]
   interval_time = input_parameters_list[0]["interval_time"]
   work_book.close
   spread_sheet.quit
@@ -150,8 +166,7 @@ begin
     }
     sleep (interval_time.to_i)*60
     loop_times = loop_times.to_i - 1
-      
-end
+  end
 
 rescue Exception => e
   puts "Telnet logging failed: #{e}\n\n"
