@@ -20,26 +20,26 @@ end
 
 def get_input_parameters(csv_file)
   input_parameter_list = Array.new()
-  aaa = CSV.readlines(csv_file)
-  CSV.readlines(csv_file).each{ |line|
+  open(csv_file).map do |line|
+  if line !~ /IP Address/     # ignore column header row
     input_parameter = Hash.new()
-    if line[0] !~ /^IP Address$/  # ignore column header row
-      input_parameter["ip_address"] = line[0]
-      input_parameter["user_name"] = line[1]
-      input_parameter["password"] = line[2]
-      input_parameter["interval_time"] = line[3]
-      input_parameter["loop_times"] = line[4]
+    line =  line.split(/,/).to_a.push  # convert each line to an array
+    input_parameter["ip_address"] = line[0]
+    input_parameter["user_name"] = line[1]
+    input_parameter["password"] = line[2]
+    input_parameter["interval_time"] = line[3]
+    input_parameter["loop_times"] = line[4]
 
-      # get instance of logging file for each IP address
-      output_file_name = File.dirname(__FILE__) + '\\' + input_parameter["ip_address"] + '_' + Time.now.strftime("%m-%d_%H-%M-%S") + '.txt'
-      logging_file = File.new(output_file_name, "a+")
-      logging_file.sync = true
-      logging_file.binmode
-      input_parameter["logging_file"] = logging_file
+    # get instance of logging file for each IP address
+    output_file_name = File.dirname(__FILE__) + '\\' + input_parameter["ip_address"] + '_' + Time.now.strftime("%m-%d_%H-%M-%S") + '.txt'
+    logging_file = File.new(output_file_name, "a+")
+    logging_file.sync = true
+    logging_file.binmode
+    input_parameter["logging_file"] = logging_file
 
-      input_parameter_list.push(input_parameter)
+    input_parameter_list.push(input_parameter)
     end
-  }
+  end
   return input_parameter_list
 end
 
@@ -82,23 +82,11 @@ end
 begin
   g = Generic.new
 
-# open spreadsheet and hide after 3 seconds
-#  excel_name = File.dirname(__FILE__) + '\\' + 'telnet_logging.xls' # use this path when we run the script in ruby environment
-#  #excel_name = Dir.pwd + '/' + 'telnet_logging.xls' # use this path when we create the executable file use Exerb
-#  setup = g.new_xls(excel_name,1)
-#  spread_sheet = setup[0]
-#  work_book = setup[1]
-#  work_sheet = setup[2]
-#  sleep 3
-#  spread_sheet.visible = true
-
-  # get all input parameters
-  # input_parameters_list = get_input_parameters(work_sheet)
-
   csv_file = File.dirname(__FILE__) + '\\' + 'telnet_logging.csv' # use this path when we run the script in ruby environment
   input_parameter_list = Array.new()
   input_parameter_list = get_input_parameters(csv_file)
-  #puts input_parameter_list
+
+  # For serial processing, they have the same loop times and interval time for all IP addresses.
   loop_times = input_parameter_list[0]["loop_times"]
   interval_time = input_parameter_list[0]["interval_time"]
   while(loop_times.to_i > 0)
