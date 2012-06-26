@@ -3,8 +3,6 @@
 
 $:.unshift File.dirname(__FILE__).sub('Tools\\Telnet','lib') #add lib to load path
 require 'generic'
-require 'csv'
-require 'jcode'
 
 $desired_location = '4,3'  # the guide of '4,3' can navigate to system operation info menu item,
 
