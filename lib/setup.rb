@@ -194,7 +194,7 @@ module  Setup
     
     #collent the git SHA-1 hash
     puts "  Collect the git SHA-1 hash"
-    g_log = `git log -1`
+    g_log = `git log -1` # Need to make sure 'C:\Program Files\Git\cmd' is in the environment variable and REBOOT PC.
     g_version = /[0-9a-z]{40}/.match(g_log).to_s
     puts "  This current git SHA-1 hash is #{g_version[0..6]}"
     version << ["git SHA-1 hash","#{g_version[0..6]}"]
