@@ -17,7 +17,7 @@ based links on the navigation pane.
 
 =end
 
-$:.unshift File.dirname(__FILE__).chomp('Tools/DataMapping')<<'lib' # add library to path
+$:.unshift File.dirname(__FILE__).chomp('Tools/DataMapping/web')<<'lib' # add library to path
 s = Time.now
 require 'generic'
 
