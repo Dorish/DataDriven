@@ -3,3 +3,6 @@
 
 # Ignore dump_log.txt (This is used for local telnet debug)
 /dump_log.txt
+
+# Ignore InputFiles folder 
+/Tools/DataMapping/InputFiles
