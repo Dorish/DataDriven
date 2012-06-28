@@ -16,13 +16,12 @@ class Test
   #path_to_base_ss is the file location of such a spreadsheet
   def initialize(path_to_base_ss)
     begin
-      @base_ss = path_to_base_ss
+      dir = ((File.dirname $0) << '/').gsub('/','\\') #Path for Excel requires backslashes
+      @base_ss = dir << path_to_base_ss
       if !File.exists?(@base_ss) then raise "File #{@base_ss} does not exist"; end;
     
       #for now, put the output file in same directory as this script
-      dir = ((File.dirname $0) << '/').gsub('/','\\') #Path for Excel requires backslashes
-      
-      @new_ss = (dir << (@base_ss.chomp(".xls")<<'_'<<Time.now.to_a.reverse[5..9].to_s<<(".xls")))
+      @new_ss = (@base_ss.chomp(".xls")<<'_'<<Time.now.to_a.reverse[5..9].to_s<<(".xls"))
       puts @new_ss.to_s
       @start_time = Time.now
       @end_time = ''

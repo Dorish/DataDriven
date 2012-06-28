@@ -3,10 +3,15 @@
 # modbus_bulk: performs a bulk set of modus queries from the supplied
 # spreadsheet and creates a time stamped copy of that spreadsheet with results
 #
+#input file - A modbus spreadsheet - can get from the ipbml card web page->data/logs->modbus elements
+#         put it in the same folder with this script.
+#run - type argument - ip address spreadsheet name. For example -  126.4.202.121 pa-dse.xls
+#         
 # == Usage
 #
 # modbus_bulk ip_address|comport path_to_spreadsheet
 #
+$:.unshift File.dirname(__FILE__)
 require 'rdoc/usage'
 require 'modbus_poller'
 

@@ -6,7 +6,7 @@ require 'test'
 class ModbusPoller < Test
   #Excel constant for the UP arrow - from http://techsupt.winbatch.com/ts/T000001033005F9.html
   XLUP = -4162
-  PATH_TO_MODPOLL = 'C:\Ruby_tools\ModbusPoller\Console\modpoll.exe'
+  PATH_TO_MODPOLL = Dir.pwd+'\Tools\DataMapping\modbus\Console\modpoll.exe'
 
   def initialize(path_to_base_ss,path_to_modpoll)
     super(path_to_base_ss)
