@@ -143,7 +143,7 @@ begin
 
   #Clean up the links array for the navigation frame
 
-  for i in 0..g.links_array[3].size-1 do
+  for i in 2..g.links_array[3].size-1 do # Exclude the Bezel page and Active Events page.
     begin
       #We don't want to click links with parenthesis for this test case
       unless g.links_array[3][i].text =~ /\(\d*\)/ then
