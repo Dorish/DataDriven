@@ -74,7 +74,10 @@ def support(g,xl)
   g.supp.click
   sleep 1
   wb,ws = xl[1,2]
-  row = 11
+  row = 1
+  while ws.Range("A#{row}")['Value'] != nil # find the row to start recording support info.
+    row = row + 1
+  end
   supprt.each do|key|
     if !key[0].nil?
       c = ws.range("A#{(row)}:B#{(row)}")
