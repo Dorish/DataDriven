@@ -190,11 +190,10 @@ mapfile = (File.dirname(__FILE__)+'/')+'webl_mon_data_map.xls'
 newss = timeStamp(mapfile)
 xl = new_xls(mapfile,1) #open base driver ss with new excel session
 wb,ws=xl[1,2]
-fdm = ws.Range("B#{8}")['Value']
-gdd = ws.Range("B#{9}")['Value']
-savedDevice = ws.Range("B#{10}")['Value']
+fdm = ws.Range("B#{12}")['Value']
+gdd = ws.Range("B#{13}")['Value']
+savedDevice = ws.Range("B#{14}")['Value']
 Dir.chdir(File.dirname(__FILE__).sub('Velocity', 'InputFiles')) # change to directory of this file
-puts Dir.pwd
 f_fdm = File.open(fdm)
 f_gdd = File.open(gdd)
 f_dev = File.open(savedDevice)
