@@ -186,7 +186,29 @@ def enum_value(f_fdm,f_gdd,value,gddid)
   return normalization_value
 end
 
-mapfile = (File.dirname(__FILE__)+'\\')+'webl_mon_data_07-06_14-40-46.xls'
+def selectproto
+  protocol = {'1'=>'web','2'=>'modbus'} # when new protocol supported, need to update this hash
+  puts "Select the third part protocol to map - "
+  flag = 1
+  while flag == 1
+    protocol.each_pair { |key, value|
+      puts key + ' - ' + value
+    }
+    keyinput = gets.chomp
+    protocol.each_key { |key|
+      if key == keyinput
+        flag = 0
+        break
+      end
+    }
+  end
+  puts "Enter the third part protocol values spreadsheet name, followed by Enter - "
+  spr_name = gets.chomp
+  mapfile = File.dirname(__FILE__).sub('Tools/DataMapping/velocity','result')+'\\' + spr_name
+  return mapfile
+end
+
+mapfile = selectproto
 newss = timeStamp(mapfile)
 xl = new_xls(mapfile,1) #open base driver ss with new excel session
 wb,ws=xl[1,2]
