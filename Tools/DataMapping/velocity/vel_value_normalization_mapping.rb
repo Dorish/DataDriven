@@ -186,7 +186,7 @@ def enum_value(f_fdm,f_gdd,value,gddid)
   return normalization_value
 end
 
-mapfile = (File.dirname(__FILE__)+'/')+'webl_mon_data_map.xls'
+mapfile = (File.dirname(__FILE__)+'\\')+'webl_mon_data_07-06_14-40-46.xls'
 newss = timeStamp(mapfile)
 xl = new_xls(mapfile,1) #open base driver ss with new excel session
 wb,ws=xl[1,2]
