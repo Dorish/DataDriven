@@ -193,7 +193,7 @@ wb,ws=xl[1,2]
 fdm = ws.Range("B#{12}")['Value']
 gdd = ws.Range("B#{13}")['Value']
 savedDevice = ws.Range("B#{14}")['Value']
-Dir.chdir(File.dirname(__FILE__).sub('Velocity', 'InputFiles')) # change to directory of this file
+Dir.chdir(File.dirname(__FILE__).sub('velocity', 'InputFiles')) # change to directory of this file
 f_fdm = File.open(fdm)
 f_gdd = File.open(gdd)
 f_dev = File.open(savedDevice)
