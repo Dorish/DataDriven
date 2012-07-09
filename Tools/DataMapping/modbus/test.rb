@@ -30,7 +30,7 @@ class Test
 
       @wb = ss.Workbooks.Open(File.expand_path(@base_ss))
       @wb.SaveAs(@new_ss)
-      @ws = @wb.Worksheets(1)
+      @ws = @wb.Worksheets(3)
       @row_ptr = 2
     end
   end
