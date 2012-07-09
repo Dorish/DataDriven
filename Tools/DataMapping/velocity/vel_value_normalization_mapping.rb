@@ -44,14 +44,27 @@ def timeStamp(vari)
   end
 end
 
+# Search out the col index of Data label for different protocol
+def datalabel_col(ws)
+  j = 0;
+  while j <10# A-J is for third part protocol
+    number =  (65 + j).chr #65 is the ASCII "A"
+    if ws.range(("#{number}1")).value =~ /Label|Description/
+      return number
+    end
+    j = j + 1
+  end
+  puts "Error - Cannot locate which colum is data label!"
+end
+
 #Search the label from a specific row of a spreadsheet.
 #Use regular expression to match. Because the label of other protocols(web,modbus,etc)may not be equal.
-def excel_search(ws, label, row)
+def excel_search(ws, col, label, row)
   i = row
   cellstr = "This is a initialization string"
   while cellstr != label
     i = i + 1 # search from the next row of 'row'
-    cellstr = ws.Range("B#{i}")['Value'] #TODO Colum index may change based on different protocol spreadsheet.
+    cellstr = ws.Range("#{col}#{i}")['Value'] #TODO Colum index may change based on different protocol spreadsheet.
     if cellstr == nil
       break
     else
@@ -222,7 +235,7 @@ f_dev = File.open(savedDevice)
 
 ws = wb.Worksheets(3)
 maxrows = excel_max_rows(ws)
-
+col = datalabel_col(ws)
 f_dev.each do|line|
   gddid = /id="\d{1,}"/.match(line).to_s.delete('id="')# get gdd id
   value = />.*</.match(line).to_s.delete('><')# positive number, negative number and string
@@ -230,14 +243,14 @@ f_dev.each do|line|
   gddlabel = temp_gddlabel[5,temp_gddlabel.length - 1] # get gdd label.
   if line=~/<datapoint id="\d{1,}"/
     row = 1
-    row = excel_search(ws, gddlabel, row) # return the row of the same gdd label in spreadsheet
+    row = excel_search(ws, col,gddlabel, row) # return the row of the same gdd label in spreadsheet
     if row > maxrows
       puts gddid +"-"+ gddlabel.to_s + " is not in spreadsheet ..............................."
     else
 
       # search until find the row and cell is empty, because some velocity points are multi module, label are similar
       while ws.Range("K#{row}")['Value'] != nil # don't remove, for situation that name are similar for example sensor
-        row = excel_search(ws, gddlabel, row)
+        row = excel_search(ws, col,gddlabel, row)
       end
       # Digital values
       if line =~ /type="DescriptorUint16" | type="DescriptorInt16"/
