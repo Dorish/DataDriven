@@ -17,7 +17,7 @@ class ModbusPoller < Test
     puts "Polling started at: #{@start_time}"
     
     @total_rows = @ws.Range("A65536").End(XLUP).Row
-    @row = 3  #Start processing at row 2,  no need to tweak the copied table to delete blank row 2.
+    @row = 2  #Start processing at row 2, the 1st row is attribute names
     while (@row <= @total_rows)
       @inner_row = @row
       register_value = query_modbus(@ws.Range("b#{@row}")['Value'])
