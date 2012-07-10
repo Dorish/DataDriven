@@ -21,7 +21,7 @@ class Test
       if !File.exists?(@base_ss) then raise "File #{@base_ss} does not exist"; end;
     
       #for now, put the output file in same directory as this script
-      @new_ss = (@base_ss.chomp(".xls")<<'_'<<Time.now.to_a.reverse[5..9].to_s<<(".xls"))
+      @new_ss = (@base_ss.chomp(".xls").sub('Tools\DataMapping\modbus','result')<<'_'<<Time.now.strftime("%m-%d_%H-%M-%S")<<(".xls"))
       puts @new_ss.to_s
       @start_time = Time.now
       @end_time = ''
