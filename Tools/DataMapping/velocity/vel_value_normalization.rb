@@ -126,14 +126,138 @@ def enum_value(f_fdm,f_gdd,value,gddid)
   return normalization_value
 end
 
-Dir.chdir(File.dirname(__FILE__).sub('Velocity','InputFiles')) # change to directory of this file
-savedDevice = 'crv-savedDevice.xml'
-fdm = 'iCOM_CR 468.xml'
-gdd = 'enp2dd.xml'
+def datamapping_setup
+  puts "----- Follow below steps to setup the test -----\n\n"
+  Dir.chdir(File.dirname(__FILE__).sub('velocity','InputFiles'))
+  while File.exist?('enp2dd.xml') == false
+    puts "Please move gdd xml latest version into InputFiles folder"
+    puts "Get gdd xml from here http://126.4.1.113/twiki/bin/view/LmgEmbedded/MAT_FDMs"
+    puts "Press Enter after done - "
+    gets
+  end
+  dev=[[],[]]
+  num = 0
+  devind = 0
+  if File.exist?('device.xml')
+    f_device = File.open('device.xml','r')
+    f_device.each do |line|
+      if line =~ /<DeviceName>.+<\/DeviceName>/
+        dev[num][0]= />.+</.match(line).to_s.delete('><')
+      end
+      if line =~ /<FDM>.+<\/FDM>/
+        dev[num][1]= />.+</.match(line).to_s.delete('><')
+        num = num + 1
+      end
+    end
+    f_device.close
+    puts "Select the device to test on - "
+    for i in 0...num
+      puts (i+1).to_s + ' - ' + dev[i][0]
+    end
+    puts "If the device is not in the list, press Enter "
+    devinput = gets
+    while devinput != "\n" && (devinput.chomp.to_i>num||devinput.chomp.to_i<1)
+      puts "Select again - "
+      devinput = gets
+    end
+    if devinput == "\n"
+      puts "Type in the Device Name - "
+      test_device = gets.chomp
+      dev[num][0] = test_device
+      dev[num][1] = 'unknownfdm'
+      devind = num
+      num = num + 1
+    else
+      test_device = dev[devinput.chomp.to_i - 1][0]
+      devind = devinput.chomp.to_i - 1
+    end
+  else
+    puts "Type in the Device Name - "
+    test_device = gets.chomp
+    dev[num][0] = test_device
+    dev[num][1] = 'unknownfdm'
+    devind = num
+    num = num + 1
+  end
+  puts "Test device is - #{test_device}"
+  if File.directory?(test_device)
+    test_fdm = dev[devind][1]
+    if File.exist?("#{test_device}/#{test_fdm}")
+      puts "The last used fdm file for this device is #{test_fdm}"
+      puts "Is this still the latest version ? (Y/N)"
+      judg = gets.chomp
+      while judg!='Y'&&judg!='N'&&judg!='y'&&judg!='n'
+        puts "Type in again - "
+        judg = gets.chomp
+      end
+      if judg =='Y'||judg =='y'
+        newfdm = test_fdm
+      else
+        puts "Please move #{test_device} FDM xml latest version into #{test_device} folder"
+        puts "Get FDM xml from here http://126.4.1.113/twiki/bin/view/LmgEmbedded/MAT_FDMs"
+        puts "Type in the FDM xml file name - "
+        newfdm = gets.chomp
+        while newfdm == ''||!File.exist?("#{test_device}/#{newfdm}")
+          puts "Please check the fdm name and type in again - "
+          newfdm = gets.chomp
+        end
+      end
+    else
+      puts "Please move #{test_device} FDM xml latest version into #{test_device} folder"
+      puts "Get FDM xml from here http://126.4.1.113/twiki/bin/view/LmgEmbedded/MAT_FDMs"
+      puts "Type in the FDM xml file name - "
+      newfdm = gets.chomp
+      while newfdm == ''||!File.exist?("#{test_device}/#{newfdm}")
+        puts "Please check the fdm name and type in again - "
+        newfdm = gets.chomp
+      end
+    end
+    while !File.exist?("#{test_device}/savedDevice.xml")
+      puts "Please move #{test_device} savedDevice.xml file into this folder"
+      puts "Press Enter after done - "
+      gets
+    end
+  else
+    Dir.mkdir(test_device)
+    puts "#{test_device} folder is created under InputFiles folder"
+    puts "Please move #{test_device} FDM xml latest version into #{test_device} folder"
+    puts "Get FDM xml from here http://126.4.1.113/twiki/bin/view/LmgEmbedded/MAT_FDMs"
+    puts "Type in the FDM xml file name - "
+    newfdm = gets.chomp
+    while newfdm == ''||!File.exist?("#{test_device}/#{newfdm}")
+      puts "Please check the fdm name and type in again - "
+      newfdm = gets.chomp
+    end
+    puts "Please move #{test_device} savedDevice.xml file into #{test_device} folder"
+    puts "Press Enter after done - "
+    gets
+    while !File.exist?("#{test_device}/savedDevice.xml")
+      puts "Please move #{test_device} savedDevice.xml file into this folder"
+      puts "Press Enter after done - "
+      gets
+    end
+  end
+  dev[devind][1] = newfdm # update the device.xml
+  f_device = File.open('device.xml','w')
+  f_device.puts '<?xml version="1.0"?>'
+  f_device.puts '<records>'
+  for j in 0...num
+    f_device.puts " <DeviceName>#{dev[j][0]}</DeviceName>"
+    f_device.puts " <FDM>#{dev[j][1]}</FDM>"
+  end
+  f_device.puts '</records>'
+  f_device.close
+  return test_device,newfdm
+end
 
-f_dev = File.open(savedDevice)
+dev,fdm = datamapping_setup
+puts "----- Test Setup Done -----\n\n"
+sleep (1)
+Dir.chdir(File.dirname(__FILE__).sub('velocity', "InputFiles/#{dev}")) # change to directory of this file
 f_fdm = File.open(fdm)
-f_gdd = File.open(gdd)
+f_dev = File.open('savedDevice.xml')
+Dir.chdir(File.dirname(__FILE__).sub('velocity', 'InputFiles')) # change to directory of this file
+f_gdd = File.open('enp2dd.xml')
 
 f_dev.each do|line|
   gddid = /id="\d{1,}"/.match(line).to_s.delete('id="') # get gdd id
