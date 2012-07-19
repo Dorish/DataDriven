@@ -62,8 +62,13 @@ end
 def excel_search(ws, col, label, row)
   i = row
   cellstr = "This is a initialization string"
+  #degf_judg = ws.Range("D#{i}")['Value'] # D is the unit column in Web,Modbus,SNMP spreadsheet
   while cellstr != label
     i = i + 1 # search from the next row of 'row'
+    degf_judg = ws.Range("D#{i}")['Value']
+    if degf_judg == ' deg F' # Fix the issue of multiple module with deg c and deg f.
+      i = i + 1
+    end
     cellstr = ws.Range("#{col}#{i}")['Value'] #TODO Colum index may change based on different protocol spreadsheet.
     if cellstr == nil
       break
