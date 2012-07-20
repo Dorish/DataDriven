@@ -222,7 +222,7 @@ def selectproto
   end
   puts "Enter the third part protocol values spreadsheet name, followed by Enter - "
   spr_name = gets.chomp
-  mapfile = File.dirname(__FILE__).sub('Tools/DataMapping/velocity','result')+'\\' + spr_name
+  mapfile = File.dirname(__FILE__).gsub('/','\\').sub('Tools\DataMapping\velocity','result')+'\\' + spr_name #Path for Excel requires backslashes
   return protocol[keyinput],mapfile
 end
 
