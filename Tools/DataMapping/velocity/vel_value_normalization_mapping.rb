@@ -69,6 +69,11 @@ def excel_search(ws, col, label, row)
     if degf_judg == ' deg F' # Fix the issue of multiple module with deg c and deg f.
       i = i + 1
     end
+    register_type_judg = ws.Range("B#{i}")['Value']
+    while register_type_judg =~ / 4\d{4}\(\d\)/ # skip 4****(*) - example 40020(1) registers
+      i = i + 1
+      register_type_judg = ws.Range("B#{i}")['Value']
+    end
     cellstr = ws.Range("#{col}#{i}")['Value'] #TODO Colum index may change based on different protocol spreadsheet.
     if cellstr == nil
       break
