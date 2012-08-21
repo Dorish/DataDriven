@@ -17,22 +17,6 @@ class Unity_SetUp
     $ie = Watir::IE.attach(:url, site)
   end
 
-    def systemos
-    lang = `systeminfo`
-    if lang =~ /en-us*/
-      @@os          = "English"
-      @@titl          = "Connect to "
-      @@ok       ="OK"
-      @@cancel    = "Cancel"
-    elsif lang =~ /zh-cn*/
-      @@os           = "Chinese"
-      @@titl           = "连接到 "
-      @@ok        ="确定"
-      @@cancel      = "取消"
-    end
-    puts "This OS is #{@@os}"
-  end
-
   # parse an excel file and pick up needed information.
   def parse_case(excel_file,result_folder)
     spread_sheet = new_xls(excel_file)
@@ -56,13 +40,44 @@ class Unity_SetUp
   end
 
   def connect_to_unity(excel_file,result_folder)
-    systemos      #Determine whether the OS is Chinese or English
+    systemos
     parameters = Hash.new()
     parameters = parse_case(excel_file,result_folder)
 
    open_ie(parameters["test_site"])
    return parameters
   end
+
+  def systemos
+    lang = `systeminfo`
+    if lang =~ /en-us*/
+      @@os          = "English"
+      @@titl          = "Connect to "
+      @@ok       ="OK"
+      @@cancel    = "Cancel"
+    elsif lang =~ /zh-cn*/
+      @@os           = "Chinese"
+      @@titl           = "连接到 "
+      @@ok        ="确定"
+      @@cancel      = "取消"
+    end
+    puts "This OS is #{@@os}"
+  end
+
+  def login(site,user,pswd)
+    conn_to = @@titl + site
+    Thread.new{
+      thread_cnt = Thread.list.size
+      sleep 1 #This sleep is critical, timing may need to be adjusted
+      Watir.autoit.WinWait(conn_to)
+      Watir.autoit.WinActivate(conn_to)
+      Watir.autoit.Send(user)
+      Watir.autoit.Send('{TAB}')
+      Watir.autoit.Send(pswd)
+      Watir.autoit.Send('{ENTER}')
+    }
+  end
+
 
   #  - create and return new instance of excel
 def new_xls(s_s) #wb name and sheet number

@@ -27,11 +27,18 @@ class Unity_Navigate
 
   # - Navigate to a special page
   def navigate_node(navigate_node)
-    nav.link(:text, navigate_node)
+      nav.link(:text,navigate_node)
+  end
+  
+  def wait()
+    #test the interval for $ie.wait 
+    #puts DateTime.now.sec
+    #$ie.wait
+    sleep(0.5)
+    #puts DateTime.now.sec
   end
 
   #  - returns true or false if the web page under test has a frame named
-  #  - <code>frame_name</code>
   def has_frame?(frame_name)
     frame_text = self.redirect {$ie.show_frames}
     !frame_text.match("#{frame_name}").nil?
@@ -52,26 +59,27 @@ class Unity_Navigate
   def click(button_name)
       #$ie.frame(:id, 'detailArea').button(:id, 'editButton')
       det.button(:id, button_name)
+      #$ie.frame(:index, 5).button(:id, 'editButton')
   end
 
   # file filed
-  def set_filefield(form_name, field_name)
-    $ie.form(:name, form_name).file_field(:name, field_name)
+  def set_filefield( field_name)
+    $ie.file_field(:id, field_name)
   end
 
   # text field
-  def set_text_value(form_name, field_id)
-      det.form(:name, form_name).text_field(:name, field_id)
+  def set_text_value(field_id)
+      det.text_field(:id, field_id)
   end
   
   # combo box
-  def select_combo(form_name, select_name)
-      det.form(:name, form_name).select_list(:name, select_name)
+  def select_combo(select_name)
+      det.select_list(:id, select_name)
   end
 
   # check box
-  def set_check_value(form_name,checkbox_id)
-    det.form(:name, form_name).checkbox(:name, checkbox_id)
+  def set_check_value(checkbox_id)
+    det.checkbox(:id, checkbox_id)
   end
 
     #This method is used to redirect stdout to a string
@@ -84,20 +92,7 @@ class Unity_Navigate
     $stdout = orig_defout
   end
 
-  def login(site,user,pswd)
-    conn_to = 'Connect to '+ site
-    Thread.new{
-      thread_cnt = Thread.list.size
-      sleep 1 #This sleep is critical, timing may need to be adjusted
-      Watir.autoit.WinWait(conn_to)
-      Watir.autoit.WinActivate(conn_to)
-      Watir.autoit.Send(user)
-      Watir.autoit.Send('{TAB}')
-      Watir.autoit.Send(pswd)
-      popup('Windows Internet Explorer','OK') #launch thread for alert popup
-      Watir.autoit.Send('{ENTER}')
-    }
-  end
+  
 
 end
 
