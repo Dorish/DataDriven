@@ -1,37 +1,72 @@
 # To change this template, choose Tools | Templates
 # and open the template in the editor.
 
-$:.unshift File.dirname(__FILE__).sub('Tools/Telnet','lib') #add lib to load path
-require 'generic'
-$desired_location = '4,3'  # the guide of '4,3' can navigate to system operation info menu item,
+require 'net/telnet'
 
-def tn_close(telnet,navigate_str)
-  esc = "\x1b"
-  navigation = navigate_str.split(',')
+$enter = "\x0D" # Ascii Hex code for Carriage Return is 0D
+$ctrl_c = "\x03" # Ascii Hex code for Ctrl+C is 03
+$esc = "\x1b" # Ascii Hex code for ESC is 1b
+$unity_exit_7 = "\x07" # Ascii Hex code for 7 is 07
+
+ # Recreate the following method to adapting the unity card and webAdapt card.
+def telnet_connect(ip,login,pswd)
+    prompt_type=/[ftpusr:~>]*\z/n
+    puts"ip,=#{ip},login=#{login},password=#{pswd}"
+    telnet = Net::Telnet.new('Host' => ip,'Prompt' =>prompt_type ,"Output_log"   => "dump_log.txt"  )
+
+    #The prompt should be the real prompt while you entered your system
+    telnet.cmd(''){|c| print c}
+    telnet.waitfor(/[Ll]ogin[: ]*\z/n) {|c| print c}
+    telnet.cmd(login) {|c| print c}
+    telnet.waitfor(/Password[: ]*\z/n) {|c| print c}
+    telnet.cmd(pswd) {|c| print c}
+
+   # the following sentence can wrok for unity and webAdapt.
+    telnet.waitfor(/[>]|Enter selection\:/n) {|c| print c}
+
+    sleep 5
+    return telnet
+  end
+
+ # close the connection for WEB Adapt
+def tn_adapt_close(telnet,navigate_str)
+  navigation = navigate_str.split('.')
   esc_num = navigation.length + 2 #need to press esc 2 times more from main menu to exit telnet session
   esc_num.times do
-    telnet.write(esc) {|c| print c}
+    telnet.write($esc) {|c| print c}
     telnet.waitfor(/\?>|<Esc> Ends Session|[Bb]ye/) {|c| print c}
   end
 end
 
-def get_input_parameters(work_sheet) 
-  index = 2
+# close the connection for unity
+def tn_unity_close(telnet,navigate_str)
+  navigation = navigate_str.split('.')
+  telnet.write($ctrl_c) {|c| print c} # Press Ctrl+C to stop DLOG file watcher
+  telnet.waitfor(/Press <Enter> to return to menu/) {|c| print c}
+
+  # Press 'enter' several times come back to the first menu
+  navigation.length.times do
+    telnet.write($enter) {|c| print c}
+    telnet.waitfor(/Enter selection\:/) {|c| print c}
+  end
+  # Press the menu of '7' to exit the connect.
+  telnet.write($unity_exit_7) {|c| print c}
+  telnet.write($enter) {|c| print c}
+end
+
+def get_input_parameters(csv_file)
   input_parameter_list = Array.new()
-  while(work_sheet.Range("A#{index}")['Value'] != nil)
+  open(csv_file).map do |line|
+  if line !~ /IP Address/     # ignore column header row
     input_parameter = Hash.new()
-    input_parameter["ip_address"] = work_sheet.Range("A#{index}")['Value']
-    
-    # ignore the repeat items
-    if have_repeat_item?(input_parameter_list, input_parameter["ip_address"]) == true
-      index = index + 1
-      next
-    end
-    
-    input_parameter["user_name"] = work_sheet.Range("B#{index}")['Value']
-    input_parameter["password"] = work_sheet.Range("C#{index}")['Value']
-    input_parameter["interval_time"] = work_sheet.Range("D#{index}")['Value']
-    input_parameter["loop_times"] = work_sheet.Range("E#{index}")['Value']
+    line =  line.split(/,/).to_a.push  # convert each line to an array
+    input_parameter["ip_address"] = line[0]
+    input_parameter["user_name"] = line[1]
+    input_parameter["password"] = line[2]
+    input_parameter["interval_time"] = line[3]
+    input_parameter["loop_times"] = line[4]
+    input_parameter["desired_location"] = line[5]
+    input_parameter["card_type"] = line[6]
 
     # get instance of logging file for each IP address
     output_file_name = File.dirname(__FILE__) + '\\' + input_parameter["ip_address"] + '_' + Time.now.strftime("%m-%d_%H-%M-%S") + '.txt'
@@ -41,10 +76,10 @@ def get_input_parameters(work_sheet)
     input_parameter["logging_file"] = logging_file
 
     input_parameter_list.push(input_parameter)
-    index = index + 1
+    end
   end
   return input_parameter_list
- end
+end
 
 def have_repeat_item?(input_parameter_list,ip_address)
   input_parameter_list.each { |item|
@@ -64,11 +99,14 @@ def is_card_available(ip)
   end
 
 def navigate_to_location(telnet, navigate_str,logging_file)
-  navigation = navigate_str.split(',')
-  navigation.each do |s|
-    telnet.write(s) {|c| print c}
-    log_info = telnet.waitfor(/\?>|press any key to exit|Hit/) {|c| print c}
-    if s == '3'
+  navigation = navigate_str.split('.')
+  for i in 0..navigation.length-1 do
+    telnet.write(navigation[i]) {|c| print c}
+    telnet.write($enter){|c| print c}
+    #^-*\s*\/[\w\/]+\/dlog[0-9]{5}\.log+[\s*\w]+\s*-*$ to match "---- \/var\/log\/dlog00001.log starting ----"
+    log_info = telnet.waitfor(/\?>|press any key to exit|Hit|Enter selection\:|-*\s*\/[\w\/]+\/dlog[0-9]{5}\.log+[\s*\w]+\s*-*/) {|c| print c}
+    # output the needed information from last index from.
+    if i == navigation.length - 1
       # delete the first character( it is the navigate number).
       log_info = log_info[1,log_info.length]
       logging_file.write(log_info)
@@ -83,29 +121,21 @@ def add_timestamp(logging_file)
 end
 
 begin
-  g = Generic.new
 
-  # open spreadsheet and hide after 3 seconds
-  excel_name = File.dirname(__FILE__) + '\\' + 'telnet_logging.xls' # use this path when we run the script in ruby environment
-  #excel_name = Dir.pwd + '/' + 'telnet_logging.xls' # use this path when we create the executable file use Exerb
-  setup = g.new_xls(excel_name,1)
-  spread_sheet = setup[0]
-  work_book = setup[1]
-  work_sheet = setup[2]
-  sleep 3
-  spread_sheet.visible = true
+  csv_file = File.dirname(__FILE__) + '\\' + 'telnet_logging.csv' # use this path when we run the script in ruby environment
+  input_parameter_list = Array.new()
+  input_parameter_list = get_input_parameters(csv_file)
 
-  # get all input parameters
-  input_parameters_list = get_input_parameters(work_sheet)
-  loop_times = input_parameters_list[0]["loop_times"]
-  interval_time = input_parameters_list[0]["interval_time"]
-  work_book.close
-  spread_sheet.quit
+  # For serial processing, they have the same loop times and interval time for all IP addresses.
+  loop_times = input_parameter_list[0]["loop_times"]
+  interval_time = input_parameter_list[0]["interval_time"]
+
   while(loop_times.to_i > 0)
-    input_parameters_list.each{|input_parameters|
+    input_parameter_list.each{|input_parameters|
       ip_address = input_parameters["ip_address"]
       logging_file = input_parameters["logging_file"]
-
+      desired_location = input_parameters["desired_location"]
+      card_type = input_parameters["card_type"]
       # record the card's state, available or not?
       is_available = is_card_available(ip_address)
 
@@ -115,11 +145,15 @@ begin
         tries = 0
         begin
           # connect to card from telnet
-          telnet = g.telnet_connect(ip_address, input_parameters["user_name"], input_parameters["password"])
+          telnet = telnet_connect(ip_address, input_parameters["user_name"], input_parameters["password"])
           # navigate to desired location
-          navigate_to_location(telnet, $desired_location,logging_file)
+          navigate_to_location(telnet, desired_location,logging_file)
           # close telnet session from card side
-          tn_close(telnet,$desired_location)
+          if card_type == "WEB Adapt"
+            tn_adapt_close(telnet,desired_location)
+          else card_type == "Unity"
+            tn_unity_close(telnet,desired_location)
+          end
           # terminate telnet
           telnet.close
         rescue Exception=>e
@@ -129,7 +163,7 @@ begin
             puts "telnet to #{ip_address} failed"
             logging_file.puts("telnet to #{ip_address} failed")
           else
-           # tn_close(telnet,$desired_location) # if this sentence error, no handle script for it.
+           # tn_close(telnet,desired_location) # if this sentence error, no handle script for it.
             telnet.close
           end
           if is_card_available(ip_address)==true # card is still available - retry
@@ -150,11 +184,11 @@ begin
     }
     sleep (interval_time.to_i)*60
     loop_times = loop_times.to_i - 1
-      
-end
+  end
 
 rescue Exception => e
   puts "Telnet logging failed: #{e}\n\n"
   puts $@.to_s
 ensure
 end
+
