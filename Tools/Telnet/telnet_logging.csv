@@ -1,6 +1,0 @@
-IP Address,Username,Password,Polling Interval in minutes,Number of polling cycles,Desired Location,Card Type
-10.146.64.75,diag,Liebert,0,1,4.2.2,Unity
-126.4.202.206,Liebert,Liebert,1,5,4.3,WEB Adapt
-126.4.202.207,Liebert,Liebert,1,5,4.3,WEB Adapt
-126.4.202.208,Liebert,Liebert,1,5,4.3,WEB Adapt
-126.4.202.209,Liebert,Liebert,1,5,4.3,WEB Adapt
