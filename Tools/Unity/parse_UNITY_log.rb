@@ -35,10 +35,9 @@ Dir.open(Dir.pwd).each do |fname|      # read log file directory
       open(infile).each do|line|        # read input file lines
         key_index = 0
         keyword.each do |key|           # start checking input file line for a match from match.txt file
-          regexp = /\.*#{key}\s*-*[\w]+\(\d+\)[\s*:]+/
+          regexp = /\.*#{key}/
           if line =~ regexp          # get the lines in the log that match the one of the parse keys
-            values = line.split(regexp)    # grab the value from the paramter:value pair that matched the parse key (after the ":")
-            value = values[1].gsub(",", ".")     # logging information contains semicolon. It conflicts with csv format.
+            value = line.gsub(",", ".")     # logging information contains semicolon. It conflicts with csv format.
             for i in 0..keyword.length - 1
                if i == key_index
                  csv_line.push value.to_s.chomp  #add parsed value to the suitable position in a csv line.
