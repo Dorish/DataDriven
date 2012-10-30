@@ -2,95 +2,99 @@
 # and open the template in the editor.
 
 $:.unshift File.dirname(__FILE__)
-require 'unity_navigate.rb'
+require 'unity_actions.rb'
 require 'unity_setup.rb'
-$:.unshift File.dirname(__FILE__).sub('controller\\unity_test','lib')
-require 'generic'
 
-def parse_test_case(navigate, set_up,case_parameters)
-   rows = case_parameters["rows"]
-   work_sheet_allcases = case_parameters["work_sheet"]
-   test_site = case_parameters["test_site"]
-   username = case_parameters["username"]
-   password = case_parameters["password"]
+include Unity_actions
+include Unity_SetUp
 
+
+def parse_test_case(case_parameters)
+  work_sheet_allcases = case_parameters["work_sheet"]
+  ss = case_parameters["work_book"]
   $ie.speed = :zippy
   $ie.maximize
   row = 1
-  while(row <= rows)
-   row +=1 
-   type = work_sheet_allcases.Range("D#{row}")['Value']
+  while(work_sheet_allcases.Range("C#{row}")['Value'] != nil)
+    row +=1
+    type = work_sheet_allcases.Range("D#{row}")['Value']
     case type
-      when 'Function'
-        #set_up.login(test_site,username,password)
-      when 'Item'
-        item_process(navigate,set_up,case_parameters,row)
-      when 'Parse'
-        sleep 1
-      when 'Comment'
+    when 'Function'
+
+    when 'Item'
+      item_process(case_parameters,row)
+    when 'Pause'
+      item_process(case_parameters,row)
+    when 'Comment'
       
     else
 
     end
   end
+  ss.save
 end
 
-def item_process(navigate,set_up,case_parameters,row)
-   test_site = case_parameters["test_site"]
-   username = case_parameters["username"]
-   password = case_parameters["password"]
-   work_sheet_allcases = case_parameters["work_sheet"]
+def item_process(case_parameters,row)
+  test_site = case_parameters["test_site"]
+  work_sheet_allcases = case_parameters["work_sheet"]
 
-   compenoent = work_sheet_allcases.Range("G#{row}")['Value']
-   arguments = work_sheet_allcases.Range("I#{row}")['Value']
-   action = work_sheet_allcases.Range("H#{row}")['Value']
-   puts "------------Start to #{compenoent}------------------"
+  componet = work_sheet_allcases.Range("G#{row}")['Value']
+  arguments1 = work_sheet_allcases.Range("I#{row}")['Value']
+  arguments2 = work_sheet_allcases.Range("J#{row}")['Value']
+  action = work_sheet_allcases.Range("H#{row}")['Value']
+  puts "------------Start to #{componet}------------------"
   case action
-     when 'Navigate'
-          navigate.navigate_node(compenoent).click
-          navigate.wait()
-     when 'Set_TextValue'
-          navigate.set_text_value(compenoent).set(arguments.to_s)
-      when 'Click'          
-          navigate.click(compenoent).click
-          if compenoent == 'editButton'
-            set_up.login(test_site,username,password)
-            # the program also have a thread problem, so this sentence is temporary.
-            sleep 2
-          end
-      when 'Set_CheckBox'
-        navigate.set_check_value(compenoent).set(arguments)
-      when 'Set_FileField'
-          navigate.set_filefield(compenoent).click_no_wait
-          navigate.set_filefield(compenoent).set(arguments)
-      when 'Select_Combo'
-          arguments = arguments.to_i
-          navigate.select_combo(compenoent).select_value(arguments)
-      else
-   end
+  when 'Navigate'
+    navigate_to(componet)
+
+  when 'Set_TextBox'
+    set_textbox(componet,arguments1)
+
+  when 'Click'
+    clickbtn(componet)
+    sleep 1
+
+  when 'Login'
+    login(test_site,arguments1,arguments2)
+
+  when 'Set_CheckBox'
+    set_checkbox(componet,arguments1)
+
+  when 'Select_ComboBox'
+    select_combobox(componet,arguments1)
+
+  when 'WaitSave'
+    waitsave(arguments1)
+
+  when 'Jsclick'
+    jsClick('OK')
+
+  when 'Verify_Result'
+    verify_result(componet,arguments1,work_sheet_allcases,row)
+  else
+    puts "Not Define yet"
+  end
 end
 
 
 # initialize the connection.
-def initialize_connect(navigate, set_up, execl_path, result_folder)
+def initialize_connect(execl_path, result_folder)
 
-  parameters = set_up.connect_to_unity(execl_path, result_folder)
+  parameters = connect_to_unity(execl_path, result_folder)
 
   # navigate to unity configure page, tab4 is unity configuration tab id.
-  navigate.unity_config("tab4")
+  unity_config("tab4")
   return parameters
 end
 
 begin
-  navigate = Unity_Navigate.new
-  set_up = Unity_SetUp.new
   execl_path = __FILE__.gsub(".rb",".xls")
   result_folder = File.dirname(__FILE__)
-  parameters = initialize_connect(navigate,set_up,execl_path, result_folder)
+  parameters = initialize_connect(execl_path, result_folder)
 
   rows = parameters["rows"]
   work_sheet_allcases = parameters["work_sheet"]
-  spread_sheet_allcases = parameters["spread_sheet"]
+  spread_sheet_allcases = parameters["work_book"]
 
   row  = 1
   while (row <= rows)
@@ -98,24 +102,15 @@ begin
     # run test case if the 'run' box is checked
     if work_sheet_allcases.Range("e#{row}")['Value'] == true
       puts "strat to run the cases......"
-      #############################################
-      #1. Parse one test case file
-      #
-      #2. Execute lines one by one
-      #
-      #3. Record the result
-      #
-      #4. Close this test case file
-      #############################################
 
       #Parse one test case file
       case_file = File.dirname(__FILE__)<<work_sheet_allcases.Range("j#{row}")['Value']
-      case_paras = set_up.parse_case(case_file,result_folder)
+      case_paras = parse_case(case_file,result_folder)
       #work_sheet_singlecases = case_paras["work_sheet"]
-      spread_sheet_singlecases = case_paras["spread_sheet"]
+      #spread_sheet_singlecases = case_paras["spread_sheet"]
 
       #Execute lines one by one
-      parse_test_case(navigate, set_up,case_paras)
+      parse_test_case(case_paras)
 
       # Close the active test case for one case.
 
@@ -123,10 +118,10 @@ begin
        
     end
   end
-  rescue Exception => e
-    puts "Executing failed: #{e}\n\n"
-    puts $@.to_s
+rescue Exception => e
+  puts "Executing failed: #{e}\n\n"
+  puts $@.to_s
 ensure
-    # Close the active test case before exit.
-    
+  # Close the active test case before exit.
+  #spread_sheet_allcases.save
 end
