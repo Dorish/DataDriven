@@ -7,5 +7,8 @@
 # Ignore InputFiles folder 
 /Tools/DataMapping/InputFiles
 
+# Ignore temp_files folder 
+/Tools/temp_files/
+
 # Netbaeans local folder
 /nbproject
