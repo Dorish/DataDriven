@@ -33,7 +33,7 @@ module  Setup
   #
   # - time stamp in 'month-day_hour-minute-second' format
   def t_stamp
-   Time.now.strftime("%m-%d_%H-%M-%S")
+    Time.now.strftime("%m-%d_%H-%M-%S")
   end
 
 
@@ -74,6 +74,9 @@ module  Setup
       else # driver was launched by controller
         xl = conn_open_xls(s_s,1) #connect to existing excel session and create new workbook for L2
       end
+    elsif new_ss.include? "Tools"
+      new_ss1 = new_ss.sub(/Tools\\.+\\/,"result\\#{rs_name}\\")
+      xl = new_xls(s_s,1)
     end
 
     ws = xl[2] # worksheet
