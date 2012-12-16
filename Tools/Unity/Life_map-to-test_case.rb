@@ -30,6 +30,9 @@ Example: LF - 4096 - System Input RMS A-N - 87 - Mains L1-N voltage  - VAC
 
 =end
 
+puts ''
+#TODO Update the framework xls lib to support opening multiple work sheets in one session
+
 #add framework library to load path. Needed for the 'require' statement below
 $:.unshift File.expand_path("../../../lib", __FILE__)
 
@@ -39,11 +42,11 @@ include Xls
 
 # Select the LIFE mapping spreadsheet to read from list
 def select_file_from_list(file_type)
-  puts'Directory = ' + Dir.pwd
+  puts'Working directory = ' + Dir.pwd
   file_list = [nil]            # pre-load the array so file_counter can start at 1
   file_counter = 1             # initialize file counter
 
-  Dir.glob(file_type).each do |f| # get the base file names (without the path)
+  Dir.glob('*.' + file_type).each do |f| # get the base filename  by file type
     puts "     #{file_counter}" + ' - ' + f
     file_list.push(File.expand_path(f)) # build absolute file path
     file_counter += 1
@@ -52,33 +55,46 @@ def select_file_from_list(file_type)
   # Select the test file to display - show its absolute path
   puts "     Type the number of the desired file above followed by <enter>: "
   file_number = gets.to_i
-  return file_list[file_number]
+  return file_list[file_number]  # 'file_list' is an array of available files
+                                 # 'file_number' is the element for file selected
 end
+
 
 # Array containing event and measure test case prefixes
-def test_case_numbers
-  puts "     Type the test case number prefix for events followed by <enter>: "
-  events_number = gets.to_s.chomp
+def test_case_prefixes
+  puts "     Type the test case number prefix for events followed by <enter>:"
+  puts "     example: 816.600.30 .....then first testcase will be 816.600.30.10"
+  events_prefix = gets.to_s.chomp
 
-  puts "     Type the test case number prefix for measuress followed by <enter>: "
-  measures_number = gets.to_s.chomp
+  puts "     Type the test case number prefix for measures followed by <enter>:"
+  puts "     example: 816.600.10 .....then first testcase will be 816.600.10.10"
+  measures_prefix = gets.to_s.chomp
 
-  return t_c_numbers = [events_number,measures_number]
+  return t_c_prefixes = [events_prefix,measures_prefix]
 end
 
-# Write the two dimensional array of test cases to a .csv file
-def file_write(file,line)
-  File.open(file, 'a') do |f|
-    f.puts line
+
+# Setup filename for output .csv file
+def csv_output(input_file,type)
+  input_file.gsub('.xlsx',"_#{type}.csv")
+end
+
+
+# Write the test case number and title to a .csv file
+def file_write(file,test_suite)
+  File.open(file, 'w+') do |f|
+    test_suite.each{|x|f.puts x.to_s}  #.to_s converts each nested array to a string
   end
 end
 
-# Build test case title by reading from LIFE mapping spreadsheet
-def build_test_cases(spreadsheet,columns,fname,tc_prefix) 
+
+# Build a test suite by reading a tab from LIFE mapping spreadsheet
+# The test suite is returned by test_suite
+def build_test_cases(spreadsheet,columns,tc_prefix) 
   row = 2
   tc_suffix = 10
   ws = spreadsheet[2]
-  
+  test_suite = Array.new
   while(ws.Range("B#{row}")['Value'] != nil) # check if row is empty
     title = Array.new
     title.push tc_prefix + "." + tc_suffix.to_s + ","
@@ -92,9 +108,6 @@ def build_test_cases(spreadsheet,columns,fname,tc_prefix)
       # If cell is empty (nil), convert to empty string
       cell = "" if cell.nil?
 
-      # Add hyphen delimeter unless column = "J" (last column)
-      # cell = cell + " - " unless col == "J"
-
       # Add cell content to test case title array
       title = title.push cell
 
@@ -102,40 +115,37 @@ def build_test_cases(spreadsheet,columns,fname,tc_prefix)
       title = title.push(" - ") unless col == "J"
 
       # Fill GDD ID cell with 'none if spreadsheet cell is empty
-      title[2] = 'none' if (ws.Range("A#{row}")['Value'] == nil)
+      title[2] = 'none' if (ws.Range("A#{row}")['Value']).nil?
     end
     
-    file_write(fname,title.to_s) #TODO Move out of this loop and write once
-    
-    print title                   # test case title to console
+    test_suite.push title         # push each test case to test suite   
     row += 1                      # increment row
     tc_suffix += 10               # increment test case number
-    puts "\n"
   end
+  test_suite.each{|x|puts x.to_s} # print test suite to console for debug
  end
 
 
 begin
-  event_col = ["A","L","B","C","F","G","H","I","J"] #Event data columns from sheet 1
-  meas_col = ["A","N","B","C","J"]                  #Measure data columns from sheet 2
+  event_col = ["A","L","B","C","F","G","H","I","J"] # Event data columns from sheet 1
+  meas_col = ["A","N","B","C","J"]                  # Measure data columns from sheet 2
+  
+  Dir.chdir(File.expand_path("../../temp_files", __FILE__)) # Set working directory
+  input_file = select_file_from_list('xlsx')        # Select the input file by type
 
-  Dir.chdir(File.expand_path("../../temp_files", __FILE__)) #Change working directory to temp_file
+  tc_prefix = test_case_prefixes()            # Array containing test case number prefixes
 
-  desired_file = select_file_from_list('*.xlsx')
+  # Create _events.csv file
+  spreadsheet = new_xls(input_file,1)         # Open spreadsheet, sheet 1
+  events_suite = build_test_cases(spreadsheet,event_col,tc_prefix[0])
+  spreadsheet[1].close                        # Close the workbook
+  events = csv_output(input_file,'_events' )  # Setup filename for events output
+  file_write(events,events_suite)             # Write test cases to events output file
 
-  # 
-  event_tc_prefix, measure_tc_prefix = test_case_numbers()
-
-
-  events = desired_file.gsub('.xlsx','_events.csv')
-  spreadsheet = new_xls(desired_file,1)   # Open sheet 1
-  build_test_cases(spreadsheet,event_col,events,event_tc_prefix)
-  spreadsheet[1].close                    # Close the workbook
-
-  puts"*****************\n"
-
-  measures = desired_file.gsub('.xlsx','_measures.csv')
-  spreadsheet = new_xls(desired_file,2)   # Open sheet 2
-  build_test_cases(spreadsheet,meas_col,measures,measure_tc_prefix)
-  spreadsheet[1].close                    # Close the workbook
+  # Create _measures.csv file
+  spreadsheet = new_xls(input_file,2)             # Open spreadsheet, sheet 2
+  measures_suite = build_test_cases(spreadsheet,meas_col,tc_prefix[1])
+  spreadsheet[1].close                            # Close the workbook
+  measures = csv_output(input_file,'_measures' )  # Setup filename for measures output
+  file_write(measures,measures_suite)             # Write test cases to measures output file
 end
