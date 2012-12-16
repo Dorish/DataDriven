@@ -36,13 +36,15 @@ $:.unshift File.expand_path("../../../lib", __FILE__)
 require 'xls'
 include Xls
 
+
+# Select the LIFE mapping spreadsheet to read from list
 def select_file_from_list(file_type)
   puts'Directory = ' + Dir.pwd
   file_list = [nil]            # pre-load the array so file_counter can start at 1
   file_counter = 1             # initialize file counter
 
   Dir.glob(file_type).each do |f| # get the base file names (without the path)
-    puts "\n     #{file_counter}" + ' - ' + f
+    puts "     #{file_counter}" + ' - ' + f
     file_list.push(File.expand_path(f)) # build absolute file path
     file_counter += 1
   end
@@ -53,7 +55,7 @@ def select_file_from_list(file_type)
   return file_list[file_number]
 end
 
-
+# Array containing event and measure test case prefixes
 def test_case_numbers
   puts "     Type the test case number prefix for events followed by <enter>: "
   events_number = gets.to_s.chomp
@@ -64,15 +66,15 @@ def test_case_numbers
   return t_c_numbers = [events_number,measures_number]
 end
 
-
+# Write the two dimensional array of test cases to a .csv file
 def file_write(file,line)
   File.open(file, 'a') do |f|
     f.puts line
   end
 end
 
-
-def build_test_case_title(spreadsheet,columns,fname,tc_prefix) #build test case title
+# Build test case title by reading from LIFE mapping spreadsheet
+def build_test_cases(spreadsheet,columns,fname,tc_prefix) 
   row = 2
   tc_suffix = 10
   ws = spreadsheet[2]
@@ -91,11 +93,19 @@ def build_test_case_title(spreadsheet,columns,fname,tc_prefix) #build test case 
       cell = "" if cell.nil?
 
       # Add hyphen delimeter unless column = "J" (last column)
-      cell = cell + " - " unless col == "J"
+      # cell = cell + " - " unless col == "J"
 
+      # Add cell content to test case title array
       title = title.push cell
+
+      # Add hyphen delimeter unless column = "J" (last column)
+      title = title.push(" - ") unless col == "J"
+
+      # Fill GDD ID cell with 'none if spreadsheet cell is empty
+      title[2] = 'none' if (ws.Range("A#{row}")['Value'] == nil)
     end
-    file_write(fname,title.to_s)
+    
+    file_write(fname,title.to_s) #TODO Move out of this loop and write once
     
     print title                   # test case title to console
     row += 1                      # increment row
@@ -113,19 +123,19 @@ begin
 
   desired_file = select_file_from_list('*.xlsx')
 
-  p tc_numbers = test_case_numbers()
-  event_tc_prefix, measure_tc_prefix = tc_numbers
+  # 
+  event_tc_prefix, measure_tc_prefix = test_case_numbers()
 
 
   events = desired_file.gsub('.xlsx','_events.csv')
   spreadsheet = new_xls(desired_file,1)   # Open sheet 1
-  build_test_case_title(spreadsheet,event_col,events,event_tc_prefix)
+  build_test_cases(spreadsheet,event_col,events,event_tc_prefix)
   spreadsheet[1].close                    # Close the workbook
 
   puts"*****************\n"
 
   measures = desired_file.gsub('.xlsx','_measures.csv')
   spreadsheet = new_xls(desired_file,2)   # Open sheet 2
-  build_test_case_title(spreadsheet,meas_col,measures,measure_tc_prefix)
+  build_test_cases(spreadsheet,meas_col,measures,measure_tc_prefix)
   spreadsheet[1].close                    # Close the workbook
 end
