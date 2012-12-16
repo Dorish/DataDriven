@@ -54,6 +54,17 @@ def select_file_from_list(file_type)
 end
 
 
+def test_case_numbers
+  puts "     Type the test case number prefix for events followed by <enter>: "
+  events_number = gets.to_s.chomp
+
+  puts "     Type the test case number prefix for measuress followed by <enter>: "
+  measures_number = gets.to_s.chomp
+
+  return t_c_numbers = [events_number,measures_number]
+end
+
+
 def file_write(file,line)
   File.open(file, 'a') do |f|
     f.puts line
@@ -61,12 +72,14 @@ def file_write(file,line)
 end
 
 
-def build_test_case_title(spreadsheet,columns,fname) #build test case title
+def build_test_case_title(spreadsheet,columns,fname,tc_prefix) #build test case title
   row = 2
+  tc_suffix = 10
   ws = spreadsheet[2]
   
   while(ws.Range("B#{row}")['Value'] != nil) # check if row is empty
     title = Array.new
+    title.push tc_prefix + "." + tc_suffix.to_s + ","
     title.push "LF - "
     columns.each do |col|
       cell=(ws.Range("#{col}#{row}")['Value'])
@@ -84,8 +97,9 @@ def build_test_case_title(spreadsheet,columns,fname) #build test case title
     end
     file_write(fname,title.to_s)
     
-    print title                  #test case title to console
-    row = row + 1
+    print title                   # test case title to console
+    row += 1                      # increment row
+    tc_suffix += 10               # increment test case number
     puts "\n"
   end
  end
@@ -99,15 +113,19 @@ begin
 
   desired_file = select_file_from_list('*.xlsx')
 
+  p tc_numbers = test_case_numbers()
+  event_tc_prefix, measure_tc_prefix = tc_numbers
+
+
   events = desired_file.gsub('.xlsx','_events.csv')
   spreadsheet = new_xls(desired_file,1)   # Open sheet 1
-  build_test_case_title(spreadsheet,event_col,events)
+  build_test_case_title(spreadsheet,event_col,events,event_tc_prefix)
   spreadsheet[1].close                    # Close the workbook
 
   puts"*****************\n"
 
   measures = desired_file.gsub('.xlsx','_measures.csv')
   spreadsheet = new_xls(desired_file,2)   # Open sheet 2
-  build_test_case_title(spreadsheet,meas_col,measures)
+  build_test_case_title(spreadsheet,meas_col,measures,measure_tc_prefix)
   spreadsheet[1].close                    # Close the workbook
 end
