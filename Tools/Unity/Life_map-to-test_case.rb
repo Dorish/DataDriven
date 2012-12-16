@@ -30,23 +30,31 @@ Example: LF - 4096 - System Input RMS A-N - 87 - Mains L1-N voltage  - VAC
 
 =end
 
-#add private lib to load path for the 'require' statement below
-$:.unshift File.expand_path("../../../lib", __FILE__) 
+#add framework library to load path. Needed for the 'require' statement below
+$:.unshift File.expand_path("../../../lib", __FILE__)
 
 require 'xls'
 include Xls
 
-def tn_close(telnet,navigate_str)
-  esc = "\x1b"
-  navigation = navigate_str.split(',')
-  esc_num = navigation.length + 2 #need to press esc 2 times more from main menu to exit telnet session
-  esc_num.times do
-    telnet.write(esc) {|c| print c}
+def select_file_from_list(file_type)
+  puts'Directory = ' + Dir.pwd
+  file_list = [nil]            # pre-load the array so file_counter can start at 1
+  file_counter = 1             # initialize file counter
+
+  Dir.glob(file_type).each do |f| # get the base file names (without the path)
+    puts "\n     #{file_counter}" + ' - ' + f
+    file_list.push(File.expand_path(f)) # build absolute file path
+    file_counter += 1
   end
+
+  # Select the test file to display - show its absolute path
+  puts "     Type the number of the desired file above followed by <enter>: "
+  file_number = gets.to_i
+  return file_list[file_number]
 end
 
 
-def get_test_title_data(spreadsheet,columns) #build test case title
+def build_test_case_title(spreadsheet,columns) #build test case title
   row = 2
   ws = spreadsheet[2]
   while(ws.Range("B#{row}")['Value'] != nil) # check if row is empty
@@ -55,14 +63,15 @@ def get_test_title_data(spreadsheet,columns) #build test case title
     columns.each do |col|
       cell=(ws.Range("#{col}#{row}")['Value'])
 
-      if cell.class == Float
-        cell = cell.to_i.to_s   # If Float, convert to integer to loose decimal
-      elsif cell.nil?
-        cell = ""               # If cell is empty (nil), convert to string
-      end
+      # If Float, convert to integer to remove decimal
+      cell = cell.to_i.to_s if cell.class == Float
 
-      cell = cell + " - " unless col == "J" # Add hyphen delimeter unless last column
-        title = title.push cell
+      # If cell is empty (nil), convert to empty string
+      cell = "" if cell.nil?
+
+      # Don't add hyphen delimeter to last column
+      cell = cell + " - " unless col == "J"
+      title = title.push cell
     end
 
     print title                  #test case title
@@ -72,18 +81,19 @@ def get_test_title_data(spreadsheet,columns) #build test case title
  end
 
 begin
-  event_col = ["A","L","B","C","F","G","H","I","J"]#Event data columns from sheet 1
-  meas_col = ["A","N","B","C","J"]#Measure data columns from sheet 2
-  
-  excel_name = File.dirname(__FILE__) + '\\' + 'NXr_866-events-meas_11-30-2012.xlsx' # use this path when we run the script in ruby environment
-  
-  #excel_name = Dir.pwd + '/' + 'NXr_866-events-meas_11-30-2012.xlsx' # use this path when we create the executable file use Exerb
-  spreadsheet = new_xls(excel_name,1)# Open sheet 1
-  get_test_title_data(spreadsheet,event_col)
+  event_col = ["A","L","B","C","F","G","H","I","J"] #Event data columns from sheet 1
+  meas_col = ["A","N","B","C","J"]                  #Measure data columns from sheet 2
+
+  Dir.chdir(File.expand_path("../../temp_files", __FILE__))
+
+  desired_file = select_file_from_list('*.xlsx')
+
+  spreadsheet = new_xls(desired_file,1)# Open sheet 1
+  build_test_case_title(spreadsheet,event_col)
   spreadsheet[1].close  # Close the workbook
 
   puts"*****************\n"
 
-  spreadsheet = new_xls(excel_name,2)  # Open sheet 2
-  get_test_title_data(spreadsheet,meas_col)
+  spreadsheet = new_xls(desired_file,2)  # Open sheet 2
+  build_test_case_title(spreadsheet,meas_col)
 end
