@@ -54,9 +54,17 @@ def select_file_from_list(file_type)
 end
 
 
-def build_test_case_title(spreadsheet,columns) #build test case title
+def file_write(file,line)
+  File.open(file, 'a') do |f|
+    f.puts line
+  end
+end
+
+
+def build_test_case_title(spreadsheet,columns,fname) #build test case title
   row = 2
   ws = spreadsheet[2]
+  
   while(ws.Range("B#{row}")['Value'] != nil) # check if row is empty
     title = Array.new
     title.push "LF - "
@@ -69,31 +77,37 @@ def build_test_case_title(spreadsheet,columns) #build test case title
       # If cell is empty (nil), convert to empty string
       cell = "" if cell.nil?
 
-      # Don't add hyphen delimeter to last column
+      # Add hyphen delimeter unless column = "J" (last column)
       cell = cell + " - " unless col == "J"
+
       title = title.push cell
     end
-
-    print title                  #test case title
+    file_write(fname,title.to_s)
+    
+    print title                  #test case title to console
     row = row + 1
     puts "\n"
   end
  end
 
+
 begin
   event_col = ["A","L","B","C","F","G","H","I","J"] #Event data columns from sheet 1
   meas_col = ["A","N","B","C","J"]                  #Measure data columns from sheet 2
 
-  Dir.chdir(File.expand_path("../../temp_files", __FILE__))
+  Dir.chdir(File.expand_path("../../temp_files", __FILE__)) #Change working directory to temp_file
 
   desired_file = select_file_from_list('*.xlsx')
 
-  spreadsheet = new_xls(desired_file,1)# Open sheet 1
-  build_test_case_title(spreadsheet,event_col)
-  spreadsheet[1].close  # Close the workbook
+  events = desired_file.gsub('.xlsx','_events.csv')
+  spreadsheet = new_xls(desired_file,1)   # Open sheet 1
+  build_test_case_title(spreadsheet,event_col,events)
+  spreadsheet[1].close                    # Close the workbook
 
   puts"*****************\n"
 
-  spreadsheet = new_xls(desired_file,2)  # Open sheet 2
-  build_test_case_title(spreadsheet,meas_col)
+  measures = desired_file.gsub('.xlsx','_measures.csv')
+  spreadsheet = new_xls(desired_file,2)   # Open sheet 2
+  build_test_case_title(spreadsheet,meas_col,measures)
+  spreadsheet[1].close                    # Close the workbook
 end
