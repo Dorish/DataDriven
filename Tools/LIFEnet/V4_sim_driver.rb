@@ -10,7 +10,7 @@ sock.send("4156,0,456", 0, "127.0.0.1", port)
 
 
 ====================================================
-Read spreadsheet parameter columns ["B","D","F","H"]
+Read spreadsheet parameter columns_1 ["B","D","F","H"]
 
 B = IP address of simulator (127.0.0.1 if local)
 D = Email address
@@ -19,7 +19,7 @@ H = Enable / Disable email
 
 
 ====================================================
-Read spreadsheet data columns ["A","H","G","D","F","I","J","K"]
+Read spreadsheet data columns_2 ["A","H","G","D","F","I","J","K"]
 
 A = PointId (GGD ID)
 H = Multi-Module Index
@@ -56,11 +56,11 @@ Has the following features implemented:
 7)	Enable or disable any data point (exclude from execution).
 8)	Console log contains time stamp for each event start and end.
 9)	The script will query the user for “how many loops” how many times to continuously repeat the scenario.
+10) Log console to a date/time stamped .csv file based on spreadsheet name.
 
 Features not implemented
 1)	Email when test is complete or aborted (partially implemented but disabled).
-2)	Log console to a date/time stamped .csv file.
-3)	Rescue mechanism to ensure that email is sent.
+2)	Rescue mechanism to ensure that email is sent.
 
 =end
 
@@ -110,8 +110,7 @@ def emergency_delay(value)
   when /([0-9]+)\s*minute/ then x = $1.to_i * 60
   when  /([0-9]+)\s*hour/ then x= $1.to_i * 3600
   end
-  return x
-  
+  return x 
 end
 
 
@@ -163,16 +162,20 @@ def build_sim_inputs(spreadsheet,columns)
 
 #
 # - time stamp file by inserting month-year_hour-minute-second before the dot
-def time_stamped_file(file)
-  file.gsub(/\./,"_" + Time.now.strftime("%m-%d_%H-%M-%S")+ '.')
+def time_stamped_file(file,ext)
+  file.gsub(/\.\S+/,"_" + Time.now.strftime("%m-%d_%H-%M-%S")+ '.'+ ext)
 end
 
 
 #
-# - write data to csv file
-def write_csv(outfile,log)
-  File.open(outfile, 'w') do |f|        # open csv file
-    f.puts log                          # write heading to csv file
+# - write data to csv file with header
+def write_csv(input,output,header)
+  File.open(output, 'w+')do |f|
+    f.puts header.join(',')
+    input.each do|line|
+      puts line
+      f.puts line
+    end
   end
 end
 
@@ -205,16 +208,13 @@ end
 
 #TODO clean up send_email method, parameterize message body
 #TODO add rescue mechanism to send email for successful completion or failure
-#TODO log the console out to a time stamped .csv file based on spreadsheet name
-#TODO cleanup write_csv method
 #TODO the command array is mutable, don't mutate it.
-#TODO 'map(&:dup)' method is not happy on 1.8.6
-#TODO add life event label the the console log and output log "D"
 
 
-s = Time.now
 port = 47809                                # destination port2
 sock = UDPSocket.new
+sock.bind("", 47123)                        # source udp port
+
 script_log = []
 loop_count = 1
 
@@ -222,9 +222,8 @@ from = "darryl.brown@emerson.com"
 to =   "d-l-brown@roadrunner.com"
 message = ""
 
-sock.bind("", 47123)                        # source udp port
 
-
+header = ["gdd_id","index","value","life_id","start","stop","elapsed"] #output file header
 columns_1 = ["B","D","F","H"]               # script data, see header for details
 columns_2 = ["A","H","G","D","I","F","J","K"]   # script data, see header for details
 
@@ -232,15 +231,16 @@ columns_2 = ["A","H","G","D","I","F","J","K"]   # script data, see header for de
 Dir.chdir(File.dirname(__FILE__)) 
 
 # show list of available spreadsheet for selection
-puts driver_file = select_file_from_list('xlsx')
+puts scenario_file = select_file_from_list('xlsx')
 
 # Get number of times to loop. Default is 1.  Press enter to accept default
 print "\nPlease enter the number of times to run the scenario <enter>: "
 loop = gets.to_i + 1                        # loop count is initialized
 
+s = Time.now
 
 # open spreadsheet
-input_file = new_xls(driver_file,1)
+input_file = new_xls(scenario_file,1)
 
 parameters = script_parameters(input_file,columns_1) # array of script parameters in spreadsheet row 1
                                                      # ip address for simulator is in first array element
@@ -249,20 +249,21 @@ commands = build_sim_inputs(input_file,columns_2)    # array of all simulator co
 ip = parameters.first
 
 
-while loop_count < loop                              # get loop from console entry  
+while loop_count < loop                     # get loop from console entry  
 
-_commands = commands.map{|x| x.dup}                 # preserve the original command array by duplicating (deep copy)
+  _commands = commands.map{|x| x.dup}       # preserve the original command array by duplicating (deep copy)
 
   puts "Start loop #{loop_count}"
-# write array to V4 Simulator
-  _commands.each do |command|               # commands is an array of command arrays
+
+  # write array to V4 Simulator
+  _commands.each do |command|               # _commands is an array of command arrays
     step_log = []
-    # puts "\n\n"                             # each command array is a spreadsheet row
-    print command.inspect
+    # puts "\n\n"                           # each command array is a spreadsheet row
+    print command.join(', ')
     step_log.push(command).flatten          # command array to log
     run_flag = command.pop                  # pop run flag ("K") off the 'command' array
     if run_flag != "y"                      # do not execute row if run flag != y
-    puts "      **Run flag = 'n' - do not run this step**"
+      puts "      **Run flag = 'n' - do not run this step**"
     else
       emr_dly_flag = command.pop            # pop emergency delay flag ("J") off the 'command' array
       emr_dly = emergency_delay(command.pop)# pop emergency delay ("F") and convert to time in seconds
@@ -270,49 +271,34 @@ _commands = commands.map{|x| x.dup}                 # preserve the original comm
       step_dly = command.pop.to_i           # pop step delay ("I") off the 'command' array and convert to integer
       life_lbl = command.pop                # remove the life label from the array to keep off of the simulator command 
       cmd = command.join(",")               # create a comma separated string for simulator
-      print "Start: " + "#{t_stamp} | "
-       step_log.push(life_lbl)              # Add life point label to log string
+      print "Start: " + "#{t_stamp} | "     # start time to console
+       step_log.push(life_lbl)              # add life point label to log string
       step_log.push(t_stamp)                # start time to log
       t1 = Time.now
 
-      sock.send("#{cmd}", 0, ip, port)      # "A","H","G" to simulator
+      sock.send("#{cmd}", 0, ip, port)      # send commands "A","H","G" to simulator
+
       sleep (emr_dly + step_dly)            # sleep for emergency + step delay in seconds
-      print "Stop: " + "#{t_stamp}"
-      step_log.push(t_stamp)
+      print "Stop: " + "#{t_stamp}"         # stop time to console
+      step_log.push(t_stamp)                # stop time to log
       t2 = Time.now
       step_t = t2-t1
-      puts " | Duration = #{step_t}  "
-      step_log.push(step_t)
-      step_log.flatten
+      puts " | Duration = #{step_t}  "      # step duration time to console
+      step_log.push(step_t)                 # step duration time to log
     end
-    script_log.push(step_log)
-  end
+    script_log.push(step_log.join(','))     # add step as comma separated string for csv log
+  end                                       # end do loop
   loop_count += 1
-end
+end                                         # end while loop
 
 sock.close
-f = Time.now
 
-puts"\n ** log console to csv ** \n\n"
+puts"\n ** log console to csv **"
+csv_out = time_stamped_file(scenario_file,"csv") # create time stamped .csv log filename
 
-csv_out = script_log.each {|x| puts x.join(',')}
-# write_csv(csv_out,log)
-puts csv_out.inspect
-# send_mail(from,to)
+write_csv(script_log,csv_out,header)        # write .csv log
 
-File.open('csv_out', 'w+') do |f|
-
-  f.puts 'test started at ' + Time.now.to_s
-  (csv_out.each{|x|(x.to_s).puts})
-  f.puts
- 
-  # f.puts ....   write something
-  sleep 5
-  f.puts 'test ended at ' + Time.now.to_s
-end
-
-
-
+print "\n\nTest ended - " + Time.now.to_s
 
 f = Time.now
-print "\n\n Total elapsed time = #{f - s} sec"  #script run time
+print ";  Total elapsed = #{f - s} sec"     #script run time
