@@ -183,7 +183,7 @@ end
 #
 # - time stamp in 'month-day_hour-minute-second' format
 def t_stamp
-Time.now.strftime("%m-%d_%H:%M:%S")
+  Time.now.strftime("%m-%d_%H:%M:%S")
 end
 
 
@@ -259,11 +259,11 @@ while loop_count < loop                     # get loop from console entry
   _commands.each do |command|               # _commands is an array of command arrays
     step_log = []
     # puts "\n\n"                           # each command array is a spreadsheet row
-    print command.join(', ')
+    print command.join(', ')+", "           # add comma to end of command string
     step_log.push(command).flatten          # command array to log
     run_flag = command.pop                  # pop run flag ("K") off the 'command' array
     if run_flag != "y"                      # do not execute row if run flag != y
-      puts "      **Run flag = 'n' - do not run this step**"
+      puts "      **do not run this step**"
     else
       emr_dly_flag = command.pop            # pop emergency delay flag ("J") off the 'command' array
       emr_dly = emergency_delay(command.pop)# pop emergency delay ("F") and convert to time in seconds
@@ -271,19 +271,19 @@ while loop_count < loop                     # get loop from console entry
       step_dly = command.pop.to_i           # pop step delay ("I") off the 'command' array and convert to integer
       life_lbl = command.pop                # remove the life label from the array to keep off of the simulator command 
       cmd = command.join(",")               # create a comma separated string for simulator
-      print "Start: " + "#{t_stamp} | "     # start time to console
-       step_log.push(life_lbl)              # add life point label to log string
+      print "Start:" + "#{t_stamp}, "       # start time to console
+      step_log.push(life_lbl)               # add life point label to log string
       step_log.push(t_stamp)                # start time to log
       t1 = Time.now
 
       sock.send("#{cmd}", 0, ip, port)      # send commands "A","H","G" to simulator
 
       sleep (emr_dly + step_dly)            # sleep for emergency + step delay in seconds
-      print "Stop: " + "#{t_stamp}"         # stop time to console
+      print "Stop:" + "#{t_stamp}"          # stop time to console
       step_log.push(t_stamp)                # stop time to log
       t2 = Time.now
       step_t = t2-t1
-      puts " | Duration = #{step_t}  "      # step duration time to console
+      puts ", Duration: #{step_t}  "        # step duration time to console
       step_log.push(step_t)                 # step duration time to log
     end
     script_log.push(step_log.join(','))     # add step as comma separated string for csv log
