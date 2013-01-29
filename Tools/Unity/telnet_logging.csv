@@ -1,0 +1,5 @@
+IP Address,Username,Password,Polling Interval in seconds,Number of polling cycles,Desired Location,Information Type
+126.4.202.212,diag,Liebert,20,4,3.6,Filesystem
+126.4.202.212,diag,Liebert,20,4,3.5,Memory
+126.4.202.212,diag,Liebert,20,4,3.3,Output_Form_Top
+126.4.202.212,diag,Liebert,20,4,4.2.2,Capture_Dlog
