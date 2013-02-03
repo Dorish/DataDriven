@@ -36,12 +36,13 @@ def creat_ss(topic,title)
   #write the tital in the ss
   n = 0
   ws.each{|x|
+    
     x.Range("A1")['Value'] = topic[n][0]  #write page  ip
     x.Range("A2")['Value'] = title[n].shift  #write title in the ss
     x.Range("A3")['Value'] = 'Date / Time'   #write time
 
-    number =  (66  + title[n].length - 1).chr #66 is the ASCII "B"
-    x.Range("B3:#{number}3")['Value'] = title[n]
+    number =  (66  + (title[n].length )*2 -1).chr #66 is the ASCII "B"
+    x.Range("B3:#{number}3")['Value'] = title[n]*2
     n += 1
     x.range("A:Z").Columns.Autofit
   }
@@ -51,13 +52,13 @@ end
 
 def write_ss(info,s_s)
   #write the data in the ss
+ 
   ws = s_s[1]
-  n = 0
   ws.each{|x|
-    x.Range("B2")['Value'] = info[n].shift  #write the column name
-    number =  (65 + info[n].length).chr #65 is the ASCII "A"
-    x.Range("A#{$row}:#{number}#{$row}")['Value'] = info[n].unshift $s.strftime("%m.%d %H:%M%::%S")
-    n += 1
+    x.Range("B2")['Value'] = info[1].shift  #write the column name
+    x.Range("J2")['Value'] = info[2].shift  #write the column name
+    number =  (65 + info[1].length*2).chr #65 is the ASCII "A"
+    x.Range("A#{$row}:#{number}#{$row}")['Value'] =(info[1]+ info[2]).unshift $s.strftime("%m.%d %H:%M%::%S")
     x.range("A:Z").Columns.Autofit
   }
   $row += 1
@@ -96,71 +97,74 @@ def collect_log(ip,cnt,dly)
   s_s = creat_ss(topic_add,title_info)
   s_s[0].saveas(log_name)
  
+
   #collection info from page in array
   puts "collection info from page"
   $row = 4
-    page_info = []
-    cnt.times{|t|
+  cnt.times{|t|
     puts "loop time == #{t}"
     $s = Time.new
-     temp4 = []
+    page_info = []
+    topic_add.each{|x|
       $ie.goto(site)
-      $ie.table(:index,1).to_a.map{|x| temp4 << x[1] }
-       page_info << temp4
-     
+      for i in 1..$ie.table(:index,1).column_count
+        page_info << $ie.table(:index,1).column_values(i)
+      end
+    }
     #write info to ss
     write_ss(page_info,s_s)
     s_s[0].save
 
     #wait and collection
     sleep(dly)
- }
-    #save the wb info
-    s_s[0].close
-    $ie.close
+  }
+
+  #save the wb info
+  s_s[0].close
+  $ie.close
   
-    puts "Finish"
+  puts "Finish"
+end
+
+
+# Initialize variables
+host = 'C:/WINDOWS/system32/drivers/etc/hosts'
+valid_ip = /^(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/
+testsite = /^(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\s+(test_site)/
+
+ip1 = nil
+ip2 = nil
+
+File.open(host).each do|line|
+  if line =~ testsite
+    ip1 = $1  # $1 is the group in the valid_ip regex
+    print "Existing test_site IP address is: ",ip1
   end
+end
 
+ip = ip1    # ip = test_site
 
-  # Initialize variables
-  host = 'C:/WINDOWS/system32/drivers/etc/hosts'
-  valid_ip = /^(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/
-  testsite = /^(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\s+(test_site)/
+puts "\n\nTo keep the existing IP address, press <Enter>"
+print "-OR- Type new IP address followed by <Enter>: "
 
-  ip1 = nil
-  ip2 = nil
-
-  File.open(host).each do|line|
-    if line =~ testsite
-      ip1 = $1  # $1 is the group in the valid_ip regex
-      print "Existing test_site IP address is: ",ip1
-    end
+ip2 = gets.chomp
+if ip2 != ''
+  while ip2 !~ valid_ip
+    print "\nPlease type a valid IP address followed by <Enter>: "
+    ip2 = gets.chomp
   end
+  ip = ip2    # ip = user entry
+end
 
-  ip = ip1    # ip = test_site
+# how many times to log
+puts "\nType number of time to log data followed by <Enter>"
+cnt = gets.chomp.to_i
 
-  puts "\n\nTo keep the existing IP address, press <Enter>"
-  print "-OR- Type new IP address followed by <Enter>: "
+# log interval time in seconds
+puts "\nType the log interval(in seconds) followed by <Enter>"
+dly = gets.chomp.to_i
 
-  ip2 = gets.chomp
-  if ip2 != ''
-    while ip2 !~ valid_ip
-      print "\nPlease type a valid IP address followed by <Enter>: "
-      ip2 = gets.chomp
-    end
-    ip = ip2    # ip = user entry
-  end
+#puts cnt.class
+#puts dly.class
 
-  # how many times to log
-  puts "\nType number of time to log data followed by <Enter>"
-  cnt = gets.chomp.to_i
-
-  # log interval time in seconds
-  puts "\nType the log interval(in seconds) followed by <Enter>"
-  dly = gets.chomp.to_i
-
-  #puts cnt.class
-  #puts dly.class
-
-  collect_log(ip,cnt,dly)
+collect_log(ip,cnt,dly)
