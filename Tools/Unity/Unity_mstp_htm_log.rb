@@ -107,6 +107,7 @@ def collect_log(ip,cnt,dly)
     page_info = []
     topic_add.each{|x|
       $ie.goto(site)
+      $ie.refresh
       for i in 1..$ie.table(:index,1).column_count
         page_info << $ie.table(:index,1).column_values(i)
       end
