@@ -267,10 +267,8 @@ while loop_count < loop                     # get loop from console entry
     else
       emr_dly_flag = command.pop            # pop emergency delay flag ("J") off the 'command' array
       emr_dly = emergency_delay(command.pop)# pop emergency delay ("F") and convert to time in seconds
-      emr_dly.class
       emr_dly = 0 if emr_dly_flag != "y"    # override: emergency delay = 0 seconds when flag is 'no'
       step_dly = command.pop.to_i           # pop step delay ("I") off the 'command' array and convert to integer
-      step_dly.class
       life_lbl = command.pop                # remove the life label from the array to keep off of the simulator command
       cmd = command.join(",")               # create a comma separated string for simulator
       print "Start:" + "#{t_stamp}, "       # start time to console
