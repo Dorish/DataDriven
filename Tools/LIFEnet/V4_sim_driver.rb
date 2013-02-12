@@ -44,7 +44,7 @@ Simple instructions:
 3)	Enter how many time to repeat the scenario.
 
 *Features*
-If you want to run a quick test, either save as and delete some rows or mark the run flag as ‘n’. 
+If you want to run a quick test, either save as and delete some rows or mark the run flag as ???? 
 
 Has the following features implemented:
 1)	Writes to V4 simulator via UDP  (remote control checkbox must be enabled on the simulator).
@@ -55,7 +55,7 @@ Has the following features implemented:
 6)	Optional (step) delay entry for each data point available . Current default is 10 seconds for each point.
 7)	Enable or disable any data point (exclude from execution).
 8)	Console log contains time stamp for each event start and end.
-9)	The script will query the user for “how many loops” how many times to continuously repeat the scenario.
+9)	The script will query the user for ??ow many loops??how many times to continuously repeat the scenario.
 10) Log console to a date/time stamped .csv file based on spreadsheet name.
 
 Features not implemented
@@ -106,7 +106,7 @@ def emergency_delay(value)
   case value
   when /Immediate/ then  x  = 0
   when nil then x = 0
-  when /([0-9]+)\s*seconds/ then x = $1
+  when /([0-9]+)\s*seconds/ then x = $1.to_i
   when /([0-9]+)\s*minute/ then x = $1.to_i * 60
   when  /([0-9]+)\s*hour/ then x= $1.to_i * 3600
   end
