@@ -105,7 +105,7 @@ end
 def emergency_delay(value)
   case value
   when /Immediate/ then  x  = 0
-  when nil then x = "next call"
+  when nil then x = 0
   when /([0-9]+)\s*seconds/ then x = $1
   when /([0-9]+)\s*minute/ then x = $1.to_i * 60
   when  /([0-9]+)\s*hour/ then x= $1.to_i * 3600
@@ -267,9 +267,11 @@ while loop_count < loop                     # get loop from console entry
     else
       emr_dly_flag = command.pop            # pop emergency delay flag ("J") off the 'command' array
       emr_dly = emergency_delay(command.pop)# pop emergency delay ("F") and convert to time in seconds
+      emr_dly.class
       emr_dly = 0 if emr_dly_flag != "y"    # override: emergency delay = 0 seconds when flag is 'no'
       step_dly = command.pop.to_i           # pop step delay ("I") off the 'command' array and convert to integer
-      life_lbl = command.pop                # remove the life label from the array to keep off of the simulator command 
+      step_dly.class
+      life_lbl = command.pop                # remove the life label from the array to keep off of the simulator command
       cmd = command.join(",")               # create a comma separated string for simulator
       print "Start:" + "#{t_stamp}, "       # start time to console
       step_log.push(life_lbl)               # add life point label to log string
@@ -278,7 +280,7 @@ while loop_count < loop                     # get loop from console entry
 
       sock.send("#{cmd}", 0, ip, port)      # send commands "A","H","G" to simulator
 
-      sleep (emr_dly + step_dly)            # sleep for emergency + step delay in seconds
+      sleep (emr_dly + step_dly)            # sleep for emergency delay + step delay in seconds
       print "Stop:" + "#{t_stamp}"          # stop time to console
       step_log.push(t_stamp)                # stop time to log
       t2 = Time.now
