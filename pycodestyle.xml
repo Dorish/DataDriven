@@ -1,0 +1,2 @@
+good-day.py:3:1: E265 block comment should start with '# '
+good-day.py:4:26: W292 no newline at end of file
